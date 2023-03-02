@@ -12,6 +12,10 @@ namespace LibCLCC.NET.Collections
     [Serializable]
     public class KVList<K, V> : List<KVPair<K, V>>
     {
+        /// <summary>
+        /// Convert the KVList to a dictionary.
+        /// </summary>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Dictionary<K, V> ToDictionary()
         {
@@ -22,6 +26,11 @@ namespace LibCLCC.NET.Collections
             }
             return __RESULT;
         }
+        /// <summary>
+        /// Convert the KVList to a dictionary with a custom processor that processes Keys.
+        /// </summary>
+        /// <param name="K_Process"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Dictionary<K, V> ToDictionary(Func<K, K> K_Process)
         {
@@ -32,6 +41,11 @@ namespace LibCLCC.NET.Collections
             }
             return __RESULT;
         }
+        /// <summary>
+        /// Convert the KVList to a dictionary with a custom processor that processes Values.
+        /// </summary>
+        /// <param name="K_Process"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Dictionary<K, V> ToDictionary(Func<V, V> V_Process)
         {
@@ -42,6 +56,12 @@ namespace LibCLCC.NET.Collections
             }
             return __RESULT;
         }
+        /// <summary>
+        /// Convert the KVList to a dictionary with a custom processor that processes a k-v pair.
+        /// </summary>
+        /// <param name="K_Process"></param>
+        /// <param name="V_Process"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Dictionary<K, V> ToDictionary(Func<K,K> K_Process, Func<V, V> V_Process)
         {
@@ -52,9 +72,21 @@ namespace LibCLCC.NET.Collections
             }
             return __RESULT;
         }
+        /// <summary>
+        /// Add a key and value pair.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void Add(K key, V value)
         {
             Add(new KVPair<K, V>(key, value));
+        }
+        /// <summary>
+        /// Add the given KVPair.
+        /// </summary>
+        /// <param name="pair"></param>
+        public void Add(KVPair<K,V> pair) {
+            Add(pair);
         }
     }
 }

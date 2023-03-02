@@ -6,6 +6,9 @@ using System.Text;
 
 namespace LibCLCC.NET.IO
 {
+    /// <summary>
+    /// Some functions about IO stream.
+    /// </summary>
     public static class StreamUtilities
     {
         /// <summary>

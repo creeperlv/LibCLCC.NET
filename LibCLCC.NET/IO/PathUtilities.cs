@@ -1,5 +1,8 @@
 ﻿namespace LibCLCC.NET.IO
 {
+    /// <summary>
+    /// Some functions about file path.
+    /// </summary>
     public static class PathUtilities
     {
         /// <summary>
