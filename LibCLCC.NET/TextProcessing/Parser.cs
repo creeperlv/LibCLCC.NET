@@ -10,12 +10,32 @@ namespace LibCLCC.NET.TextProcessing {
     /// </summary>
     public class Parser {
         /// <summary>
-        /// Works for operators. e.g.: ==, --
+        /// Blank Splitters
         /// </summary>
         public char[] Splitters = new char[] { ' ', '\t', '\r', '\n' };
-        public List<string> PredefinedSegmentTemplate = new List<string>();
-        public List<char> SegmentEncapsulationIdentifiers = new List<char>();
+        /// <summary>
+        /// Works for operators. e.g.: ==, --
+        /// </summary>
+        public List<string> PredefinedSegmentTemplate = new List<string> {
+            "==", "--", "++", "<=", ">=", "=>", ">>", "<<"
+        };
+        public List<char> PredefinedSegmentCharacters = new List<char> {
+            '[', ']', '(', ')', '{', '}'
+        };
+        /// <summary>
+        /// Encapsulation, like: '' , ""
+        /// </summary>
+        public List<SegmentEncapsulationIdentifier> SegmentEncapsulationIdentifiers = new List<SegmentEncapsulationIdentifier> {
+            new SegmentEncapsulationIdentifier('\''),
+            new SegmentEncapsulationIdentifier('\"')
+        };
+        /// <summary>
+        /// Comments: //, #
+        /// </summary>
         public List<LineCommentIdentifier> lineCommentIdentifiers = new List<LineCommentIdentifier>();
+        /// <summary>
+        /// Comments: /****/ 
+        /// </summary>
         public List<ClosableCommentIdentifier> closableCommentIdentifiers = new List<ClosableCommentIdentifier>();
         /// <summary>
         /// Parse segment
@@ -28,31 +48,77 @@ namespace LibCLCC.NET.TextProcessing {
             Segment current = root;
             bool isSegmentEncapsulation = false;
             string attention = "";
+            SegmentEncapsulationIdentifier segmentEncapsulationIdentifier = null;
+            LineCommentIdentifier CurrentLCI = null;
+            ClosableCommentIdentifier closableCommentIdentifier = null;
             using (StreamReader sr = new StreamReader(str)) {
                 while (true) {
                     int b8 = sr.Read();
                     if (b8 == -1) break;
                     char c = (char)b8;
+                    if (CurrentLCI != null) {
+                        if (c == '\r' || c == '\n') {
+                            CurrentLCI = null;
+                            continue;
+                        }
+                    }
                     current.content += b8;
                     if (isSegmentEncapsulation) {
-
+                        if (c == segmentEncapsulationIdentifier.R) {
+                            segmentEncapsulationIdentifier = null;
+                            NewSegment();
+                        }
                     }
                     else {
                         if (Splitters.Contains<char>(c)) {
-                            CloseSegment();
+                            /**
+                             * 
+                             * **/
+                            if (current.content.Length > 0) {
+                                NewSegment();
+
+                            }
                         }
                         else {
-                            foreach (var item in PredefinedSegmentTemplate) {
-                                if (item[attention.Length] == c) {
-                                    attention += c;
-                                }
-                                if (item == attention) {
-                                    /**
-                                     * Separate segment
-                                     * **/
-                                    CloseSegment();
+                            bool Hit = false;
+                            {
+
+                                foreach (var item in lineCommentIdentifiers) {
+                                    if (item.StartSequence == attention) {
+                                        //Comment Started.
+                                        current.content = current.content.Substring(current.content.Length - attention.Length);
+                                        attention = "";
+                                        CurrentLCI = item;
+                                        Hit = true;
+                                        NewSegment();
+                                        break;
+                                    }
                                 }
                             }
+                            if (!Hit)
+                                foreach (var item in SegmentEncapsulationIdentifiers) {
+                                    if (item.L == c) {
+                                        if (current.content.Length > 0) {
+                                            segmentEncapsulationIdentifier = item;
+                                            NewSegment();
+                                            current.EncapsulationIdentifier = segmentEncapsulationIdentifier;
+                                            current.isEncapsulated = true;
+                                        }
+                                        break;
+                                    }
+                                }
+                            if (!Hit)
+                                foreach (var item in PredefinedSegmentTemplate) {
+                                    if (item[attention.Length] == c) {
+                                        attention += c;
+                                    }
+                                    if (item == attention) {
+                                        /**
+                                         * Separate segment
+                                         * **/
+                                        CloseSegment();
+                                    }
+                                }
                         }
 
                     }
@@ -62,31 +128,13 @@ namespace LibCLCC.NET.TextProcessing {
             void CloseSegment() {
 
             }
+            void NewSegment() {
+                Segment segment = new Segment();
+                current.Next = segment;
+                segment.Prev = current;
+                current = segment;
+            }
             return root;
         }
-    }
-
-    /// <summary>
-    /// One line comment like // or #
-    /// </summary>
-    public class LineCommentIdentifier {
-        public char[] StartSequence;
-    }
-    /// <summary>
-    /// Closable comment like /* */
-    /// </summary>
-    public class ClosableCommentIdentifier {
-        public string Start;
-        public string End;
-    }
-    /// <summary>
-    /// One segment
-    /// </summary>
-    public class Segment {
-        public Segment Prev = null;
-        public Segment Next = null;
-        public string content;
-        public bool isEncapsulated;
-        public char EncapsulationCharacter;
     }
 }

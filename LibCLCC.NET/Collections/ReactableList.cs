@@ -22,6 +22,17 @@ namespace LibCLCC.NET.Collections {
         /// </summary>
         public BreakableFunc<ReactableList<T>, T> RemoveReactChain = new BreakableFunc<ReactableList<T>, T>();
         /// <summary>
+        /// React chain for clear operations.
+        /// </summary>
+        public BreakableFunc<ReactableList<T>> ClearReactChain = new BreakableFunc<ReactableList<T>>();
+        /// <summary>
+        /// Clear the list.
+        /// </summary>
+        public new void Clear() {
+            base.Clear();
+            ClearReactChain.Invoke(this);
+        }
+        /// <summary>
         /// Add an item.
         /// </summary>
         /// <param name="t"></param>
