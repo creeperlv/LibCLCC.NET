@@ -30,7 +30,7 @@ Also, the library is aimed on providing functions in pure C# and compatible with
 |KVPair						| A key-value pair |
 |KVList						| A list which T is KVPair |
 |ReactableList				| A list that invoke BreakableFunc for Add,Remove,RemoveAt,Clear|
-|Parser						| A general purpose parser. |
+|GeneralPurposeParser		| A general purpose parser. |
 
 ## License
 

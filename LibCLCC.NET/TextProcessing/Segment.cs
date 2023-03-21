@@ -14,7 +14,7 @@
         /// <summary>
         /// Content
         /// </summary>
-        public string content;
+        public string content="";
         /// <summary>
         /// Is Encapsulated
         /// </summary>
@@ -23,5 +23,12 @@
         /// The encapsulation character.
         /// </summary>
         public SegmentEncapsulationIdentifier EncapsulationIdentifier;
+        /// <summary>
+        /// Combined ToString().
+        /// </summary>
+        /// <returns></returns>
+        public string SequentialToString(string intermediate=">") {
+            return (isEncapsulated?$"{EncapsulationIdentifier.L}{content}{EncapsulationIdentifier.R}": content) + intermediate + (Next==null?"":Next.SequentialToString(intermediate));
+        }
     }
 }
