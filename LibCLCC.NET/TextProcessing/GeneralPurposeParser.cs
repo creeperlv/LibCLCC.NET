@@ -16,12 +16,11 @@ namespace LibCLCC.NET.TextProcessing {
         /// <summary>
         /// Works for operators. e.g.: ==, --
         /// </summary>
-        public List<string> PredefinedSegmentTemplate = new List<string> {
-            "==", "--", "++", "<=", ">=", "=>", ">>", "<<"
-        };
-        public List<char> PredefinedSegmentCharacters = new List<char> {
-            '[', ']', '(', ')', '{', '}','.',',',';'
-        };
+        public List<string> PredefinedSegmentTemplate = new List<string> { };
+        /// <summary>
+        /// Predefined Segment Characters.
+        /// </summary>
+        public List<char> PredefinedSegmentCharacters = new List<char> { };
         /// <summary>
         /// Encapsulation, like: '' , ""
         /// </summary>
@@ -83,6 +82,7 @@ namespace LibCLCC.NET.TextProcessing {
 
                             current.content += c;
                         }
+                        continue;
                     }
                     else {
                         if (Splitters.Contains<char>(c)) {
@@ -99,6 +99,7 @@ namespace LibCLCC.NET.TextProcessing {
                                 NewSegment();
                             }
                             {
+                                current.isEncapsulated = false;
                                 current.content += c;
                                 NewSegment();
                             }
@@ -136,10 +137,10 @@ namespace LibCLCC.NET.TextProcessing {
                                     if (item.Start == attention) {
                                         //Comment Started.
                                         current.content = current.content.Substring(0, Math.Max(0, current.content.Length - attention.Length));
-                                        attention = "";
                                         CurrentCCI = item;
                                         Hit = true;
                                         NewSegment();
+                                        attention = "";
                                         break;
                                     }
                                 }
@@ -149,11 +150,14 @@ namespace LibCLCC.NET.TextProcessing {
                                     if (item.L == c) {
                                         if (current.content.Length > 0)
                                             current.content = current.content.Substring(0, current.content.Length - 1);
-                                        if (current.content.Length > 0) {
+                                        {
                                             segmentEncapsulationIdentifier = item;
-                                            NewSegment();
+                                            if (current.content.Length > 0)
+                                                NewSegment();
                                             current.EncapsulationIdentifier = segmentEncapsulationIdentifier;
                                             current.isEncapsulated = true;
+                                            Hit = true;
+                                            attention = "";
                                         }
                                         break;
                                     }
@@ -178,6 +182,7 @@ namespace LibCLCC.NET.TextProcessing {
                                             current.content = item;
                                             NewSegment();
                                         }
+                                        break;
                                     }
                                 }
                             }
@@ -186,9 +191,6 @@ namespace LibCLCC.NET.TextProcessing {
 
                     }
                 }
-
-            }
-            void CloseSegment() {
 
             }
             void NewSegment() {

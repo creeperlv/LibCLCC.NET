@@ -18,7 +18,7 @@
         /// <summary>
         /// Is Encapsulated
         /// </summary>
-        public bool isEncapsulated;
+        public bool isEncapsulated=false;
         /// <summary>
         /// The encapsulation character.
         /// </summary>
