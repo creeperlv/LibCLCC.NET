@@ -18,9 +18,9 @@ namespace LibCLCC.NET.NUnit {
         [Test]
         public void Test1() {
             var s=parser.Parse(_content,false);
-            Console.WriteLine(s.SequentialToString(" "));
+            Console.WriteLine(s.SequentialToString(" ",true));
             s=CLP.Parse(__content,false);
-            Console.WriteLine(s.SequentialToString(" "));
+            Console.WriteLine(s.SequentialToString(" "),true);
 
             Assert.Pass();
         }
