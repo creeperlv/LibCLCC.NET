@@ -17,11 +17,12 @@ namespace LibCLCC.NET.NUnit {
 
         [Test]
         public void Test1() {
-            var s=parser.Parse(_content,false);
-            Console.WriteLine(s.SequentialToString(" ",true));
-            s=CLP.Parse(__content,false);
-            Console.WriteLine(s.SequentialToString(" "),true);
-
+            var s=parser.Parse(_content,false,"117");
+            Console.WriteLine(s.SequentialToString("->",true,true));
+            var _s=CLP.Parse(__content,false);
+            Console.WriteLine(_s.SequentialToString(" "),true);
+            GeneralPurposeParser.Concatenate(s, _s);
+            Console.WriteLine(s.SequentialToString("->",true,true));
             Assert.Pass();
         }
     }

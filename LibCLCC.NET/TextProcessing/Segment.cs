@@ -6,6 +6,10 @@
     public class Segment
     {
         /// <summary>
+        /// The ID specified.
+        /// </summary>
+        public string ID;
+        /// <summary>
         // Line number in the source.
         /// </summary>
         public int LineNumber;
@@ -33,19 +37,44 @@
         /// Combined ToString().
         /// </summary>
         /// <returns></returns>
-        public string SequentialToString(string intermediate = ">", bool ShowLineNumber = false)
+        public string SequentialToString(string intermediate = ">", bool ShowLineNumber = false,bool ShowID=false)
         {
             if (ShowLineNumber == true)
             {
-                return (isEncapsulated ? $"{EncapsulationIdentifier.L}{LineNumber}:{content}{EncapsulationIdentifier.R}" : $"{LineNumber}:{content}")
-                    + intermediate + (Next == null ? "" : Next.SequentialToString(intermediate, ShowLineNumber));
+                return (isEncapsulated ? ($"{EncapsulationIdentifier.L}"+(ShowID?$"({ID})":"")+
+                    $"{LineNumber}:{content}{EncapsulationIdentifier.R}" ): ((ShowID ? $"({ID})" : "") + $"{LineNumber}:{content}"))
+                    + intermediate + (Next == null ? "" : Next.SequentialToString(intermediate, ShowLineNumber,ShowID));
 
             }
             else
             {
                 return (isEncapsulated ? $"{EncapsulationIdentifier.L}{content}{EncapsulationIdentifier.R}" : content)
-                    + intermediate + (Next == null ? "" : Next.SequentialToString(intermediate, ShowLineNumber));
+                    + intermediate + (Next == null ? "" : Next.SequentialToString(intermediate, ShowLineNumber, ShowID));
             }
+        }
+        /// <summary>
+        /// Concatenate 2 segment lists. From the end of L and the start of R.
+        /// </summary>
+        /// <param name="L"></param>
+        /// <param name="R"></param>
+        public static void Concatenate(Segment L, Segment R)
+        {
+            if (L.Next == null)
+            {
+                L.Next = R;
+            }
+            else
+            {
+                Concatenate(L.Next, R);
+            }
+        }
+        /// <summary>
+        /// Concatenate 2 segment lists. From the end of current and the start of R.
+        /// </summary>
+        /// <param name="R"></param>
+        public void Concatenate(Segment R)
+        {
+            Concatenate(this, R);
         }
     }
 }

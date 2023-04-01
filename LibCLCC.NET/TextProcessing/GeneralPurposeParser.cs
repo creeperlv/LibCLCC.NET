@@ -43,10 +43,11 @@ namespace LibCLCC.NET.TextProcessing
         /// </summary>
         /// <param name="str"></param>
         /// <param name="DisableCommentChecker"></param>
+        /// <param name="ID"></param>
         /// <returns></returns>
-        public Segment Parse(string str, bool DisableCommentChecker)
+        public Segment Parse(string str, bool DisableCommentChecker, string ID = null)
         {
-            Segment root = new Segment();
+            Segment root = new Segment { ID = ID };
             Segment current = root;
             bool isSegmentEncapsulation = false;
             string attention = "";
@@ -258,9 +259,11 @@ namespace LibCLCC.NET.TextProcessing
                 }
 
             }
+            //current.Prev.Next = null;
+            //current.Prev = null;
             void NewSegment(int LineNumber)
             {
-                Segment segment = new Segment();
+                Segment segment = new Segment { ID = ID };
                 current.Next = segment;
                 segment.LineNumber = LineNumber;
                 segment.Prev = current;
