@@ -102,6 +102,7 @@ namespace LibCLCC.NET.TextProcessing
                         if (c == segmentEncapsulationIdentifier.R)
                         {
                             segmentEncapsulationIdentifier = null;
+                            isSegmentEncapsulation=false;
                             NewSegment(Line);
                         }
                         else
@@ -212,6 +213,7 @@ namespace LibCLCC.NET.TextProcessing
                                             current.content = current.content.Substring(0, current.content.Length - 1);
                                         {
                                             segmentEncapsulationIdentifier = item;
+                                            isSegmentEncapsulation = true;
                                             if (current.content.Length > 0)
                                                 NewSegment(Line);
                                             current.EncapsulationIdentifier = segmentEncapsulationIdentifier;
