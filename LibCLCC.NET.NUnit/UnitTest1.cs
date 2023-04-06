@@ -12,7 +12,7 @@ namespace LibCLCC.NET.NUnit
         [SetUp]
         public void Setup()
         {
-            _content = "namespace LibCLCC.NET.NUnit {\r\n    public class Tests {\r\n\tstring _content;\r\n        [SetUp]\r\n        public void Setup() {\r\n            _content = \"a b\";\r\n        }\r\n\r\n        [Test]\r\n        public void Test1() {\r\n            Assert.Pass();\r\n        }\r\n    }\r\n}";
+            _content = "namespace LibCLCC.NET.NUnit {\r\n    public class Tests {\r\n\tstring _content;\r\n        [SetUp]\r\n //asdas d\r\n   /**asdsa asdasda **/    public void Setup() {\r\n            _content = \"a b\";\r\n        }\r\n\r\n        [Test]\r\n        public void Test1() {\r\n            Assert.Pass();\r\n        }\r\n    }\r\n}";
             __content = "rm /* -rf --no-preserve-root";
             parser = new GeneralPurposeParser();
             CLP = new CommandLineParser();
@@ -21,6 +21,8 @@ namespace LibCLCC.NET.NUnit
         [Test]
         public void Test1()
         {
+            parser.lineCommentIdentifiers.Add(new LineCommentIdentifier { StartSequence = "//" });
+            parser.closableCommentIdentifiers.Add(new ClosableCommentIdentifier {  Start="/*", End="*/"});
             var s = parser.Parse(_content, false, "117");
             Console.WriteLine(s.SequentialToString("->", true, false));
             var _s = CLP.Parse(__content, false);
