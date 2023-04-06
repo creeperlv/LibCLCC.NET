@@ -71,18 +71,39 @@ namespace LibCLCC.NET.TextProcessing
                                 sr.Read();
                             }
                             Line++;
+                            current.LineNumber= Line;
                             CurrentLCI = null;
                             continue;
                         }
                         if (c == '\n')
                         {
                             Line++;
+                            current.LineNumber = Line;
                             CurrentLCI = null;
                             continue;
                         }
+                        continue;
                     }
                     else if (CurrentCCI != null)
                     {
+                        if (c == '\r')
+                        {
+                            if (sr.Peek() == '\n')
+                            {
+                                sr.Read();
+                            }
+                            Line++;
+                            current.LineNumber = Line;
+                            attention = "";
+                            continue;
+                        }
+                        if (c == '\n')
+                        {
+                            Line++;
+                            current.LineNumber = Line;
+                            attention = "";
+                            continue;
+                        }
                         attention += c;
                         if (CurrentCCI.End.StartsWith(attention))
                         {
@@ -94,15 +115,16 @@ namespace LibCLCC.NET.TextProcessing
                         }
                         else
                         {
-                            attention = "";
+                            attention = ""+c;
                         }
+                        continue;
                     }
                     if (isSegmentEncapsulation)
                     {
                         if (c == segmentEncapsulationIdentifier.R)
                         {
                             segmentEncapsulationIdentifier = null;
-                            isSegmentEncapsulation=false;
+                            isSegmentEncapsulation = false;
                             NewSegment(Line);
                         }
                         else
@@ -175,7 +197,10 @@ namespace LibCLCC.NET.TextProcessing
                                         attention = "";
                                         CurrentLCI = item;
                                         Hit = true;
-                                        NewSegment(Line);
+                                        if (current.content != "")
+                                        {
+                                            NewSegment(Line);
+                                        }
                                         break;
                                     }
                                 }
@@ -197,7 +222,10 @@ namespace LibCLCC.NET.TextProcessing
                                         current.content = current.content.Substring(0, Math.Max(0, current.content.Length - attention.Length));
                                         CurrentCCI = item;
                                         Hit = true;
-                                        NewSegment(Line);
+                                        if (current.content != "")
+                                        {
+                                            NewSegment(Line);
+                                        }
                                         attention = "";
                                         break;
                                     }
