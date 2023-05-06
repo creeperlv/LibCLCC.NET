@@ -55,6 +55,7 @@ namespace LibCLCC.NET.TextProcessing
             LineCommentIdentifier CurrentLCI = null;
             ClosableCommentIdentifier CurrentCCI = null;
             int Line = 0;
+            int sid = 0;
             using (StringReader sr = new StringReader(str))
             {
                 while (true)
@@ -294,6 +295,8 @@ namespace LibCLCC.NET.TextProcessing
             void NewSegment(int LineNumber)
             {
                 Segment segment = new Segment { ID = ID };
+                segment.Index = sid;
+                sid++;
                 current.Next = segment;
                 segment.LineNumber = LineNumber;
                 segment.Prev = current;

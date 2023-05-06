@@ -9,6 +9,7 @@
         /// The ID specified.
         /// </summary>
         public string ID;
+        public int Index;
         /// <summary>
         // Line number in the source.
         /// </summary>
@@ -51,6 +52,14 @@
                 return (isEncapsulated ? $"{EncapsulationIdentifier.L}{content}{EncapsulationIdentifier.R}" : content)
                     + intermediate + (Next == null ? "" : Next.SequentialToString(intermediate, ShowLineNumber, ShowID));
             }
+        }
+        public static bool operator <(Segment L , Segment R)
+        {
+            return L.Index < R.Index;
+        }
+        public static bool operator >(Segment L , Segment R)
+        {
+            return L.Index > R.Index;
         }
         /// <summary>
         /// Concatenate 2 segment lists. From the end of L and the start of R.
