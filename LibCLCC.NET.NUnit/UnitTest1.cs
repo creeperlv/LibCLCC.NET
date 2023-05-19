@@ -17,7 +17,43 @@ namespace LibCLCC.NET.NUnit
             parser = new GeneralPurposeParser();
             CLP = new CommandLineParser();
         }
+        [Test]
+        public void FloatPointTest()
+        {
+                CStyleParser cStyleParser = new CStyleParser();
+            {
 
+                var float_str_0 = "0.0";
+                var o = cStyleParser.Parse(float_str_0 , false , null);
+                Console.WriteLine(o.SequentialToString(" "));
+                FloatPointScanner.ScanFloatPoint(ref o);
+                Console.WriteLine(o.SequentialToString(" "));
+            }
+            {
+
+                var float_str_0 = "=0.0";
+                var o = cStyleParser.Parse(float_str_0 , false , null);
+                Console.WriteLine(o.SequentialToString(" "));
+                FloatPointScanner.ScanFloatPoint(ref o);
+                Console.WriteLine(o.SequentialToString(" "));
+            }
+            {
+
+                var float_str_0 = "=0.0f";
+                var o = cStyleParser.Parse(float_str_0 , false , null);
+                Console.WriteLine(o.SequentialToString(" "));
+                FloatPointScanner.ScanFloatPoint(ref o);
+                Console.WriteLine(o.SequentialToString(" "));
+            }
+            {
+
+                var float_str_0 = "=.0f";
+                var o = cStyleParser.Parse(float_str_0 , false , null);
+                Console.WriteLine(o.SequentialToString(" "));
+                FloatPointScanner.ScanFloatPoint(ref o);
+                Console.WriteLine(o.SequentialToString(" "));
+            }
+        }
         [Test]
         public void Test1()
         {

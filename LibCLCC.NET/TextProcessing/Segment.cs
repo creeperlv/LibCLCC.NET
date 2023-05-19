@@ -38,19 +38,19 @@
         /// Combined ToString().
         /// </summary>
         /// <returns></returns>
-        public string SequentialToString(string intermediate = ">", bool ShowLineNumber = false,bool ShowID=false)
+        public string SequentialToString(string intermediate = ">" , bool ShowLineNumber = false , bool ShowID = false)
         {
             if (ShowLineNumber == true)
             {
-                return (isEncapsulated ? ($"{EncapsulationIdentifier.L}"+(ShowID?$"({ID})":"")+
-                    $"{LineNumber}:{content}{EncapsulationIdentifier.R}" ): ((ShowID ? $"({ID})" : "") + $"{LineNumber}:{content}"))
-                    + intermediate + (Next == null ? "" : Next.SequentialToString(intermediate, ShowLineNumber,ShowID));
+                return (isEncapsulated ? ($"{EncapsulationIdentifier.L}" + (ShowID ? $"({ID})" : "") +
+                    $"{LineNumber}:{content}{EncapsulationIdentifier.R}") : ((ShowID ? $"({ID})" : "") + $"{LineNumber}:{content}"))
+                    + intermediate + (Next == null ? "" : Next.SequentialToString(intermediate , ShowLineNumber , ShowID));
 
             }
             else
             {
                 return (isEncapsulated ? $"{EncapsulationIdentifier.L}{content}{EncapsulationIdentifier.R}" : content)
-                    + intermediate + (Next == null ? "" : Next.SequentialToString(intermediate, ShowLineNumber, ShowID));
+                    + intermediate + (Next == null ? "" : Next.SequentialToString(intermediate , ShowLineNumber , ShowID));
             }
         }
         public static bool operator <(Segment L , Segment R)
@@ -66,7 +66,7 @@
         /// </summary>
         /// <param name="L"></param>
         /// <param name="R"></param>
-        public static void Concatenate(Segment L, Segment R)
+        public static void Concatenate(Segment L , Segment R)
         {
             if (L.Next == null)
             {
@@ -74,7 +74,7 @@
             }
             else
             {
-                Concatenate(L.Next, R);
+                Concatenate(L.Next , R);
             }
         }
         /// <summary>
@@ -83,7 +83,7 @@
         /// <param name="R"></param>
         public void Concatenate(Segment R)
         {
-            Concatenate(this, R);
+            Concatenate(this , R);
         }
     }
 }
