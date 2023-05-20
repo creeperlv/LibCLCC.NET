@@ -39,6 +39,62 @@ namespace LibCLCC.NET.TextProcessing
         /// </summary>
         public List<ClosableCommentIdentifier> closableCommentIdentifiers = new List<ClosableCommentIdentifier>();
         /// <summary>
+        /// Second stage parse for predefined identifiers;
+        /// </summary>
+        /// <param name="HEAD"></param>
+        public void SecondStageParse(ref Segment HEAD)
+        {
+
+            Segment Cur = HEAD;
+            string attention="";
+            Segment AttSeg = Cur;
+            while (true)
+            {
+                if (Cur == null)
+                {
+                    break;
+                }
+                if (Cur.content == "")
+                {
+                    if (Cur.Next == null)
+                    {
+                        break;
+                    }
+                }
+                if (attention == "")
+                {
+                    AttSeg = Cur;
+                }
+                attention += Cur.content;
+                bool Hit = false;
+                foreach (var item in PredefinedSegmentTemplate)
+                {
+                    if (item == attention)
+                    {
+                        Hit = true;
+                        AttSeg.content = item;
+                        AttSeg.Next = Cur.Next;
+                        attention = "";
+                        if (Cur.Next != null)
+                        {
+                            Cur.Next.Prev= AttSeg;
+                        }
+                        break;
+                    }
+                    if (item.StartsWith(attention))
+                    {
+                        Hit = true;
+                        break;
+                    }
+                }
+                if (Hit == false)
+                {
+                    attention = "";
+                }
+                Cur=Cur.Next;
+            }
+        }
+        /// <summary>
         /// Parse segment
         /// </summary>
         /// <param name="str"></param>
@@ -254,35 +310,35 @@ namespace LibCLCC.NET.TextProcessing
                                     }
                                 }
                             }
-                            if (!Hit)
-                            {
-                                foreach (var item in PredefinedSegmentTemplate)
-                                {
-                                    if (item.Length > attention.Length)
-                                        if (item[attention.Length] == c)
-                                        {
-                                            attention += c;
-                                            Hit = true;
-                                        }
-                                    if (item == attention)
-                                    {
-                                        if (current.content == item)
-                                        {
-                                            NewSegment(Line);
-                                        }
-                                        else
-                                        {
-                                            current.content = current.content.Substring(0, Math.Max(0, current.content.Length - attention.Length));
-                                            attention = "";
-                                            Hit = true;
-                                            NewSegment(Line);
-                                            current.content = item;
-                                            NewSegment(Line);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
+                            //if (!Hit)
+                            //{
+                            //    foreach (var item in PredefinedSegmentTemplate)
+                            //    {
+                            //        if (item.Length > attention.Length)
+                            //            if (item[attention.Length] == c)
+                            //            {
+                            //                attention += c;
+                            //                Hit = true;
+                            //            }
+                            //        if (item == attention)
+                            //        {
+                            //            if (current.content == item)
+                            //            {
+                            //                NewSegment(Line);
+                            //            }
+                            //            else
+                            //            {
+                            //                current.content = current.content.Substring(0, Math.Max(0, current.content.Length - attention.Length));
+                            //                attention = "";
+                            //                Hit = true;
+                            //                NewSegment(Line);
+                            //                current.content = item;
+                            //                NewSegment(Line);
+                            //            }
+                            //            break;
+                            //        }
+                            //    }
+                            //}
                             if (!Hit) attention = "";
                         }
 
@@ -302,6 +358,7 @@ namespace LibCLCC.NET.TextProcessing
                 segment.Prev = current;
                 current = segment;
             }
+            SecondStageParse(ref root);
             return root;
         }
     }

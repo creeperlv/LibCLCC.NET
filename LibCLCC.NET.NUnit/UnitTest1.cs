@@ -53,6 +53,14 @@ namespace LibCLCC.NET.NUnit
                 FloatPointScanner.ScanFloatPoint(ref o);
                 Console.WriteLine(o.SequentialToString(" "));
             }
+            {
+
+                var float_str_0 = "if(1.0==.0f){return 1.1f>=0.0f;}";
+                var o = cStyleParser.Parse(float_str_0 , false , null);
+                Console.WriteLine(o.SequentialToString(" "));
+                FloatPointScanner.ScanFloatPoint(ref o);
+                Console.WriteLine(o.SequentialToString(" "));
+            }
         }
         [Test]
         public void Test1()
