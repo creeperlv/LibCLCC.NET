@@ -88,6 +88,7 @@
                     if (R.Next != null)
                         R.Next.Prev = Cur;
                     Cur.Next = R.Next;
+                    formation = "";
                 }
             }
         }
