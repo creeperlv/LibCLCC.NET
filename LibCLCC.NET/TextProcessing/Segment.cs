@@ -1,14 +1,20 @@
-﻿namespace LibCLCC.NET.TextProcessing
+﻿using System;
+
+namespace LibCLCC.NET.TextProcessing
 {
     /// <summary>
     /// One segment
     /// </summary>
+    [Serializable]
     public class Segment
     {
         /// <summary>
         /// The ID specified.
         /// </summary>
         public string ID;
+        /// <summary>
+        /// Index in the source content, added by order it was parsed. There may be blank index number unused in final result for the Second Stage Parse will substitute some segments.
+        /// </summary>
         public int Index;
         /// <summary>
         // Line number in the source.
@@ -17,10 +23,12 @@
         /// <summary>
         /// Previous segment, null indicates it is the root segment
         /// </summary>
+        [NonSerialized]
         public Segment Prev = null;
         /// <summary>
         /// Next Segment
         /// </summary>
+        [NonSerialized]
         public Segment Next = null;
         /// <summary>
         /// Content
@@ -53,10 +61,22 @@
                     + intermediate + (Next == null ? "" : Next.SequentialToString(intermediate , ShowLineNumber , ShowID));
             }
         }
+        /// <summary>
+        /// If L is earlier than R in the parsed content.
+        /// </summary>
+        /// <param name="L"></param>
+        /// <param name="R"></param>
+        /// <returns></returns>
         public static bool operator <(Segment L , Segment R)
         {
             return L.Index < R.Index;
         }
+        /// <summary>
+        /// If L is older than R in the parsed content.
+        /// </summary>
+        /// <param name="L"></param>
+        /// <param name="R"></param>
+        /// <returns></returns>
         public static bool operator >(Segment L , Segment R)
         {
             return L.Index > R.Index;

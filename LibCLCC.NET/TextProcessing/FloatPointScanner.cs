@@ -31,7 +31,7 @@
                 {
                     Segment L = Cur;
                     Segment R = Cur.Next;
-                    if (long.TryParse(Cur.Prev.content , out var integer_part))
+                    if (long.TryParse(Cur.Prev.content , out _))
                     {
                         L = L.Prev;
                         formation = Cur.Prev.content;
@@ -52,7 +52,8 @@
                     {
                         break;
                     }
-                    if (long.TryParse(R.content , out var dec_part))
+
+                    if (long.TryParse(R.content , out _))
                     {
                         formation += "." + R.content;
                     }
@@ -62,7 +63,7 @@
                         if (pes_dec.EndsWith("f") && Accept_f)
                         {
                             pes_dec = pes_dec.Substring(0 , pes_dec.Length - 1);
-                            if (long.TryParse(pes_dec , out dec_part))
+                            if (long.TryParse(pes_dec , out _))
                             {
 
                                 formation += "." + Cur.Next.content;
