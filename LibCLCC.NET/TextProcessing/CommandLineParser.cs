@@ -1,16 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
-namespace LibCLCC.NET.TextProcessing {
+namespace LibCLCC.NET.TextProcessing
+{
     /// <summary>
-    /// GeneralPurposeParser adjusted for command-line.
+    /// Preserved for compatibility.
     /// </summary>
-    public class CommandLineParser : GeneralPurposeParser {
-        /// <summary>
-        /// Initialize configuration.
-        /// </summary>
-        public CommandLineParser() {
-            PredefinedSegmentCharacters = new List<char>();
-            PredefinedSegmentTemplate = new List<string>();
-        }
-    }
+    [Obsolete]
+    public class CommandLineParser : CommandLineScanner { }
 }
