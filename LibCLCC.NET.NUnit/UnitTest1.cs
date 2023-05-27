@@ -7,20 +7,20 @@ namespace LibCLCC.NET.NUnit
     {
         string _content;
         string __content;
-        GeneralPurposeParser parser;
-        CommandLineParser CLP;
+        GeneralPurposeScanner parser;
+        CommandLineScanner CLP;
         [SetUp]
         public void Setup()
         {
             _content = "namespace LibCLCC.NET.NUnit {\r\n    public class Tests {\r\n\tstring _content;\r\n        [SetUp]\r\n //asdas d\r\n   /**asdsa asdasda **/    public void Setup() {\r\n            _content = \"a b\";\r\n        }\r\n\r\n        [Test]\r\n        public void Test1() {\r\n            Assert.Pass();\r\n        }\r\n    }\r\n}";
             __content = "rm /* -rf --no-preserve-root";
-            parser = new GeneralPurposeParser();
-            CLP = new CommandLineParser();
+            parser = new GeneralPurposeScanner();
+            CLP = new CommandLineScanner();
         }
         [Test]
         public void FloatPointTest()
         {
-                CStyleParser cStyleParser = new CStyleParser();
+                CStyleScanner cStyleParser = new CStyleScanner();
             {
 
                 var float_str_0 = "0.0";
