@@ -105,5 +105,47 @@ namespace LibCLCC.NET.TextProcessing
         {
             Concatenate(this , R);
         }
+        /// <summary>
+        /// Create an identical replica of current Segment.
+        /// </summary>
+        /// <returns></returns>
+        public Segment Duplicate()
+        {
+            Segment segment = new Segment();
+            segment.Prev = Prev;
+            segment.Next = Next;
+            segment.content= content;
+            segment.isEncapsulated= isEncapsulated;
+            segment.EncapsulationIdentifier = EncapsulationIdentifier;
+            segment.ID= ID;
+            segment.Index = Index;
+            segment.LineNumber = LineNumber;
+            return segment;
+        }
+        /// <summary>
+        /// Replace L to R with New.
+        /// <br/>
+        /// Such as: 
+        /// <br/>
+        /// Given: 0,1,2,3,4,5, where L = 1, R=3, New = 100
+        /// <br/>
+        /// The result will be: 0,100,4,5
+        /// </summary>
+        /// <param name="New"></param>
+        /// <param name="L"></param>
+        /// <param name="R"></param>
+        public static void Substitute(Segment New,Segment L , Segment R)
+        {
+            New.Prev = L.Prev;
+            if(L.Prev!= null)
+            {
+                L.Prev.Next = New;
+            }
+            New.Next = R.Next;
+            if(R.Next!= null)
+            {
+                R.Next.Prev = New;
+            }
+        }
     }
 }
