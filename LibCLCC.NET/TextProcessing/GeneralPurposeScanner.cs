@@ -42,7 +42,16 @@ namespace LibCLCC.NET.TextProcessing
         /// Second stage parse for predefined identifiers;
         /// </summary>
         /// <param name="HEAD"></param>
+        [Obsolete]
         public void SecondStageParse(ref Segment HEAD)
+        {
+            SecondStageScan(ref HEAD);
+        }
+        /// <summary>
+        /// Second stage scan for predefined identifiers;
+        /// </summary>
+        /// <param name="HEAD"></param>
+        public void SecondStageScan(ref Segment HEAD)
         {
 
             Segment Cur = HEAD;
@@ -101,7 +110,18 @@ namespace LibCLCC.NET.TextProcessing
         /// <param name="DisableCommentChecker"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public Segment Parse(string str, bool DisableCommentChecker, string ID = null)
+        [Obsolete]
+        public Segment Parse(string str , bool DisableCommentChecker , string ID = null) {
+            return Scan(str , DisableCommentChecker , ID);
+        }
+        /// <summary>
+        /// Scan segment
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="DisableCommentChecker"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public Segment Scan(string str, bool DisableCommentChecker, string ID = null)
         {
             Segment root = new Segment { ID = ID };
             Segment current = root;
@@ -195,9 +215,6 @@ namespace LibCLCC.NET.TextProcessing
                     {
                         if (Splitters.Contains<char>(c))
                         {
-                            /**
-                             * 
-                             * **/
                             bool isNewLine = false;
                             if (c == ('\r'))
                             {
@@ -358,7 +375,7 @@ namespace LibCLCC.NET.TextProcessing
                 segment.Prev = current;
                 current = segment;
             }
-            SecondStageParse(ref root);
+            SecondStageScan(ref root);
             return root;
         }
     }
