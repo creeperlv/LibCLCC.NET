@@ -21,5 +21,20 @@ namespace LibCLCC.NET.TextProcessing
             '[', ']', '(', ')', '{', '}','.',',',';','&','|','<','>','/','+','-','*','%','#','?','!',':','~','^','='
             };
         }
+        /// <summary>
+        /// Scan segments, then perform negative number scan and ExponentialNumberScan.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="DisableCommentChecker"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public override Segment Scan(string str , bool DisableCommentChecker , string ID = null)
+        {
+            var HEAD = base.Scan(str , DisableCommentChecker , ID);
+            FloatPointScanner.ScanFloatPoint(ref HEAD , true , true);
+            this.NegativeNumberScan(ref HEAD);
+            this.ExponentialNumberScan(ref HEAD);
+            return HEAD;
+        }
     }
 }
