@@ -1,7 +1,9 @@
-﻿using System;
+﻿using LibCLCC.NET.Data;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 
 namespace LibCLCC.NET.TextProcessing
@@ -14,7 +16,7 @@ namespace LibCLCC.NET.TextProcessing
         /// <summary>
         /// Blank Splitters
         /// </summary>
-        public char[] Splitters = new char[] { ' ', '\t', '\r', '\n' };
+        public char [ ] Splitters = new char [ ] { ' ' , '\t' , '\r' , '\n' };
         /// <summary>
         /// Works for operators. e.g.: ==, --
         /// </summary>
@@ -48,6 +50,144 @@ namespace LibCLCC.NET.TextProcessing
             SecondStageScan(ref HEAD);
         }
         /// <summary>
+        /// Scan for negative numbers;
+        /// </summary>
+        /// <param name="HEAD"></param>
+        public void NegativeNumberScan(ref Segment HEAD)
+        {
+            Segment Cur = HEAD;
+            while (true)
+            {
+                if (Cur == null)
+                {
+                    break;
+                }
+                if (Cur.content == "")
+                {
+                    if (Cur.Next == null)
+                    {
+                        break;
+                    }
+                }
+                if (Cur.isEncapsulated == false)
+                {
+                    if (Cur.content != null)
+                    {
+                        if (Cur.content.TryParse(out long _) || Cur.content.TryParse(out ulong _)
+                            || Cur.content.TryParse(out uint _) || Cur.content.TryParse(out int _)
+                            || Cur.content.TryParse(out float _) || Cur.content.TryParse(out double _))
+                        {
+                            if (Cur.Prev != null)
+                            {
+                                if (Cur.Prev.content == "-")
+                                {
+                                    if (Cur.Prev.Prev != null)
+                                    {
+                                        var Attention = Cur.Prev.Prev;
+                                        var Hit = false;
+                                        foreach (var item in PredefinedSegmentCharacters)
+                                        {
+                                            if (Attention.content == $"{item}")
+                                            {
+                                                Hit = true;
+                                                break;
+                                            }
+                                        }
+                                        foreach (var item in PredefinedSegmentTemplate)
+                                        {
+                                            if (Attention.content == item)
+                                            {
+                                                Hit = true;
+                                                break;
+                                            }
+                                        }
+                                        if (Hit)
+                                        {
+                                            Cur.content = $"-{Cur.content}";
+                                            Attention.Next = Cur;
+                                            Cur.Prev = Attention;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Cur = Cur.Next;
+            }
+        }
+        /// <summary>
+        /// Scan for numbers with scientific notation.
+        /// </summary>
+        /// <param name="HEAD"></param>
+        public void ExponentialNumberScan(ref Segment HEAD)
+        {
+            Segment Cur = HEAD;
+            while (true)
+            {
+                if (Cur == null)
+                {
+                    break;
+                }
+                if (Cur.content == "")
+                {
+                    if (Cur.Next == null)
+                    {
+                        break;
+                    }
+                }
+                if (Cur.isEncapsulated == false)
+                {
+                    if (Cur.content != null)
+                    {
+                        if (Cur.content.TryParse(out long _) || Cur.content.TryParse(out ulong _)
+                            || Cur.content.TryParse(out uint _) || Cur.content.TryParse(out int _)
+                            || Cur.content.TryParse(out float _) || Cur.content.TryParse(out double _))
+                        {
+                            if (Cur.content.EndsWith("e") || Cur.content.EndsWith("E"))
+                            {
+                                Segment candidate = Cur;
+                                Cur = Cur.Next;
+                                bool Hit = false;
+                                if (Cur.content == "-")
+                                {
+                                    Cur = Cur.Next;
+
+                                    if (Cur.content.TryParse(out long _) || Cur.content.TryParse(out ulong _)
+                                        || Cur.content.TryParse(out uint _) || Cur.content.TryParse(out int _))
+                                    {
+                                        if (!Cur.content.StartsWith("-"))
+                                        {
+                                            Hit = true;
+                                            candidate.content += "-" + Cur.content;
+                                        }
+                                    }
+                                }
+                                if (!Hit)
+                                    if (Cur.content.TryParse(out long _)
+                                        || Cur.content.TryParse(out ulong _)
+                                        || Cur.content.TryParse(out uint _)
+                                        || Cur.content.TryParse(out int _))
+                                    {
+                                        Hit = true;
+                                        candidate.content += Cur.content;
+
+                                    }
+                                if (Hit)
+                                {
+                                    var Tail = Cur.Next;
+                                    candidate.Next = Tail;
+                                    Tail.Prev = candidate;
+
+                                }
+                            }
+                        }
+                    }
+                }
+                Cur = Cur.Next;
+            }
+        }
+        /// <summary>
         /// Second stage scan for predefined identifiers;
         /// </summary>
         /// <param name="HEAD"></param>
@@ -55,7 +195,7 @@ namespace LibCLCC.NET.TextProcessing
         {
 
             Segment Cur = HEAD;
-            string attention="";
+            string attention = "";
             Segment AttSeg = Cur;
             while (true)
             {
@@ -86,7 +226,7 @@ namespace LibCLCC.NET.TextProcessing
                         attention = "";
                         if (Cur.Next != null)
                         {
-                            Cur.Next.Prev= AttSeg;
+                            Cur.Next.Prev = AttSeg;
                         }
                         break;
                     }
@@ -100,7 +240,7 @@ namespace LibCLCC.NET.TextProcessing
                 {
                     attention = "";
                 }
-                Cur=Cur.Next;
+                Cur = Cur.Next;
             }
         }
         /// <summary>
@@ -111,7 +251,8 @@ namespace LibCLCC.NET.TextProcessing
         /// <param name="ID"></param>
         /// <returns></returns>
         [Obsolete]
-        public Segment Parse(string str , bool DisableCommentChecker , string ID = null) {
+        public Segment Parse(string str , bool DisableCommentChecker , string ID = null)
+        {
             return Scan(str , DisableCommentChecker , ID);
         }
         /// <summary>
@@ -121,7 +262,7 @@ namespace LibCLCC.NET.TextProcessing
         /// <param name="DisableCommentChecker"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public Segment Scan(string str, bool DisableCommentChecker, string ID = null)
+        public virtual Segment Scan(string str , bool DisableCommentChecker , string ID = null)
         {
             Segment root = new Segment { ID = ID };
             Segment current = root;
@@ -148,7 +289,7 @@ namespace LibCLCC.NET.TextProcessing
                                 sr.Read();
                             }
                             Line++;
-                            current.LineNumber= Line;
+                            current.LineNumber = Line;
                             CurrentLCI = null;
                             continue;
                         }
@@ -192,7 +333,7 @@ namespace LibCLCC.NET.TextProcessing
                         }
                         else
                         {
-                            attention = ""+c;
+                            attention = "" + c;
                         }
                         continue;
                     }
@@ -259,7 +400,7 @@ namespace LibCLCC.NET.TextProcessing
                                 foreach (var item in lineCommentIdentifiers)
                                 {
                                     if (item.StartSequence.Length > attention.Length)
-                                        if (item.StartSequence[attention.Length] == c)
+                                        if (item.StartSequence [ attention.Length ] == c)
                                         {
                                             attention += c;
                                             Hit = true;
@@ -267,7 +408,7 @@ namespace LibCLCC.NET.TextProcessing
                                     if (item.StartSequence == attention)
                                     {
                                         //Comment Started.
-                                        current.content = current.content.Substring(0, Math.Max(0, current.content.Length - attention.Length));
+                                        current.content = current.content.Substring(0 , Math.Max(0 , current.content.Length - attention.Length));
                                         attention = "";
                                         CurrentLCI = item;
                                         Hit = true;
@@ -285,7 +426,7 @@ namespace LibCLCC.NET.TextProcessing
                                 foreach (var item in closableCommentIdentifiers)
                                 {
                                     if (item.Start.Length > attention.Length)
-                                        if (item.Start[attention.Length] == c)
+                                        if (item.Start [ attention.Length ] == c)
                                         {
                                             attention += c;
                                             Hit = true;
@@ -293,7 +434,7 @@ namespace LibCLCC.NET.TextProcessing
                                     if (item.Start == attention)
                                     {
                                         //Comment Started.
-                                        current.content = current.content.Substring(0, Math.Max(0, current.content.Length - attention.Length));
+                                        current.content = current.content.Substring(0 , Math.Max(0 , current.content.Length - attention.Length));
                                         CurrentCCI = item;
                                         Hit = true;
                                         if (current.content != "")
@@ -312,7 +453,7 @@ namespace LibCLCC.NET.TextProcessing
                                     if (item.L == c)
                                     {
                                         if (current.content.Length > 0)
-                                            current.content = current.content.Substring(0, current.content.Length - 1);
+                                            current.content = current.content.Substring(0 , current.content.Length - 1);
                                         {
                                             segmentEncapsulationIdentifier = item;
                                             isSegmentEncapsulation = true;

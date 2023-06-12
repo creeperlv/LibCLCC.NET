@@ -16,8 +16,9 @@ namespace LibCLCC.NET.TextProcessing
         /// Index in the source content, added by order it was parsed. There may be blank index number unused in final result for the Second Stage Parse will substitute some segments.
         /// </summary>
         public int Index;
+
         /// <summary>
-        // Line number in the source.
+        /// Line number in the source.
         /// </summary>
         public int LineNumber;
         /// <summary>
