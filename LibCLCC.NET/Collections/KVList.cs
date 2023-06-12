@@ -44,7 +44,7 @@ namespace LibCLCC.NET.Collections
         /// <summary>
         /// Convert the KVList to a dictionary with a custom processor that processes Values.
         /// </summary>
-        /// <param name="K_Process"></param>
+        /// <param name="V_Process"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Dictionary<K, V> ToDictionary(Func<V, V> V_Process)
@@ -85,8 +85,8 @@ namespace LibCLCC.NET.Collections
         /// Add the given KVPair.
         /// </summary>
         /// <param name="pair"></param>
-        public void Add(KVPair<K,V> pair) {
-            Add(pair);
+        public new void Add(KVPair<K,V> pair) {
+            base.Add(pair);
         }
     }
 }

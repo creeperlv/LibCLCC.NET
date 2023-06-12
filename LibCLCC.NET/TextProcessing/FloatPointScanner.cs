@@ -9,9 +9,9 @@
         /// Scan for float points
         /// </summary>
         /// <param name="HEAD"></param>
-        /// <param name="Accept_f">If accept xxx.xxxf</param>
+        /// <param name="suffixes">Possible suffixes, such as "efdEFD"</param>
         /// <param name="AllowNoInteger">If accept .xxx</param>
-        public static void ScanFloatPoint(ref Segment HEAD , bool Accept_f = true , bool AllowNoInteger = true)
+        public static void ScanFloatPoint(ref Segment HEAD , string suffixes = "" , bool AllowNoInteger = true)
         {
             Segment Cur = HEAD;
             string formation = "";
@@ -59,23 +59,29 @@
                     }
                     else
                     {
+                        bool Hit = false;
                         var pes_dec = Cur.Next.content;
-                        if (pes_dec.EndsWith("f") && Accept_f)
+                        foreach (var item in suffixes)
                         {
-                            pes_dec = pes_dec.Substring(0 , pes_dec.Length - 1);
-                            if (long.TryParse(pes_dec , out _))
+                            if (pes_dec.EndsWith(item))
                             {
+                                Hit = true;
+                                pes_dec = pes_dec.Substring(0 , pes_dec.Length - 1);
+                                if (long.TryParse(pes_dec , out _))
+                                {
 
-                                formation += "." + Cur.Next.content;
-                            }
-                            else
-                            {
+                                    formation += "." + Cur.Next.content;
+                                }
+                                else
+                                {
 
-                                Cur = Cur.Next;
-                                continue;
+                                    Cur = Cur.Next;
+                                    continue;
+                                }
+
                             }
                         }
-                        else
+                        if (!Hit)
                         {
                             Cur = Cur.Next;
                             continue;

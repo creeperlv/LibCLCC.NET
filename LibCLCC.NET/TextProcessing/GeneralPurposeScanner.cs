@@ -146,7 +146,7 @@ namespace LibCLCC.NET.TextProcessing
                         {
                             if (Cur.content.EndsWith("e") || Cur.content.EndsWith("E"))
                             {
-                                Segment candidate = new Segment();
+                                Segment candidate = Cur;
                                 Cur = Cur.Next;
                                 bool Hit = false;
                                 if (Cur.content == "-")
@@ -154,24 +154,25 @@ namespace LibCLCC.NET.TextProcessing
                                     Cur = Cur.Next;
 
                                     if (Cur.content.TryParse(out long _) || Cur.content.TryParse(out ulong _)
-                                        || Cur.content.TryParse(out uint _) || Cur.content.TryParse(out int _)
-                                        || Cur.content.TryParse(out float _) || Cur.content.TryParse(out double _))
+                                        || Cur.content.TryParse(out uint _) || Cur.content.TryParse(out int _))
                                     {
-                                        Hit = true;
-                                        candidate.content += "-" + Cur.content;
+                                        if (!Cur.content.StartsWith("-"))
+                                        {
+                                            Hit = true;
+                                            candidate.content += "-" + Cur.content;
+                                        }
                                     }
                                 }
-                                if (Cur.content.TryParse(out long _)
-                                    || Cur.content.TryParse(out ulong _)
-                                    || Cur.content.TryParse(out uint _)
-                                    || Cur.content.TryParse(out int _)
-                                    || Cur.content.TryParse(out float _)
-                                    || Cur.content.TryParse(out double _))
-                                {
-                                    Hit = true;
-                                    candidate.content += Cur.content;
+                                if (!Hit)
+                                    if (Cur.content.TryParse(out long _)
+                                        || Cur.content.TryParse(out ulong _)
+                                        || Cur.content.TryParse(out uint _)
+                                        || Cur.content.TryParse(out int _))
+                                    {
+                                        Hit = true;
+                                        candidate.content += Cur.content;
 
-                                }
+                                    }
                                 if (Hit)
                                 {
                                     var Tail = Cur.Next;

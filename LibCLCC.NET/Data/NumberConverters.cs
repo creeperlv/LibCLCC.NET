@@ -615,7 +615,8 @@ namespace LibCLCC.NET.Data
             int Length = input.Length;
             if (Negative)
             {
-                Start = 1;
+                data = 0;
+                return false;
             }
             if (input.EndsWith("UL"))
             {

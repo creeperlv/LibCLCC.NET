@@ -8,7 +8,6 @@ namespace LibCLCC.NET.Delegates
     /// <summary>
     /// If a func returns true will break the func chain.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public class BreakableFunc : ConnectableList<Func<bool>>
     {
         /// <summary>
@@ -76,6 +75,7 @@ namespace LibCLCC.NET.Delegates
     /// if a func returns true will break the func chain.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    /// <typeparam name="U"></typeparam>
     public class BreakableFunc<T, U> : ConnectableList<Func<T, U, bool>>
     {
         /// <summary>
@@ -111,6 +111,8 @@ namespace LibCLCC.NET.Delegates
     /// if a func returns true will break the func chain.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <typeparam name="V"></typeparam>
     public class BreakableFunc<T, U, V> : ConnectableList<Func<T, U, V, bool>>
     {
         /// <summary>
