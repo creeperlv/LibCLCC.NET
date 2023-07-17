@@ -10,6 +10,11 @@ namespace LibCLCC.NET.TreeModel
 	public class GeneralTree
 	{
 		/// <summary>
+		/// Get the name that a provider can use.
+		/// </summary>
+		/// <returns></returns>
+		public virtual string GetName() => "GeneralTree";
+		/// <summary>
 		/// Add an child
 		/// </summary>
 		/// <param name="child"></param>

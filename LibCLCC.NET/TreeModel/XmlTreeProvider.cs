@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace LibCLCC.NET.TreeModel
@@ -55,7 +56,7 @@ namespace LibCLCC.NET.TreeModel
 				}
 
 			}
-			if (Hit)
+			if (!Hit)
 			{
 				FinalResult.AddError(new TreeNodeTypeNotDefinedError(Name));
 				return FinalResult;
@@ -92,8 +93,18 @@ namespace LibCLCC.NET.TreeModel
 		{
 			XmlDocument xmlDocument = new XmlDocument();
 			xmlDocument.LoadXml(xml);
-			var root = xmlDocument.FirstChild as XmlElement;
-			return ParseTree(root);
+			foreach (var item in xmlDocument.ChildNodes)
+			{
+				if(item is XmlElement xe)
+				{
+					return ParseTree(xe);
+				}
+			}
+			{
+				OperationResult<GeneralTree> result= new OperationResult<GeneralTree>(null);
+				result.AddError<NotAValidXmlContent>();
+				return result;
+			}
 		}
 		/// <summary>
 		/// Parse tree from stream.
@@ -116,15 +127,53 @@ namespace LibCLCC.NET.TreeModel
 		{
 			providers.Remove(provider);
 		}
-
+		XmlElement ToXmlNode(XmlDocument document , GeneralTree node)
+		{
+			var element = document.CreateElement(node.GetName());
+			foreach (var item in node.GetAllProperties())
+			{
+				element.SetAttribute(item.Key , item.Value);
+			}
+			foreach (var item in node.GetChildren())
+			{
+				var child = ToXmlNode(document , item);
+				element.AppendChild(child);
+			}
+			return element;
+		}
+		/// <summary>
+		/// Serialize to string using XmlDocument.
+		/// </summary>
+		/// <param name="tree"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
 		public OperationResult<string> SerializeTree(GeneralTree tree)
 		{
-			throw new NotImplementedException();
+			XmlDocument document = new XmlDocument();
+			var root = ToXmlNode(document , tree);
+			document.AppendChild(root);
+			StringBuilder stringBuilder = new StringBuilder();
+			using StringWriter sw = new StringWriter(stringBuilder);
+			document.Save(sw);
+			return sw.ToString();
 		}
-
+		/// <summary>
+		/// Serialize to a stream using XmlDocument
+		/// </summary>
+		/// <param name="tree"></param>
+		/// <param name="stream"></param>
+		/// <returns></returns>
 		public OperationResult<bool> SerializeTree(GeneralTree tree , Stream stream)
 		{
-			throw new NotImplementedException();
+			XmlDocument document = new XmlDocument();
+			var root = ToXmlNode(document , tree);
+			document.AppendChild(root);
+			document.Save(stream);
+			return true;
 		}
 	}
+	/// <summary>
+	/// The input xml content is not a valid xml content.
+	/// </summary>
+	public class NotAValidXmlContent : Error { }
 }
