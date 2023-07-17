@@ -31,6 +31,7 @@ Also, the library is aimed on providing functions in pure C# and compatible with
 |KVList						| A list which T is KVPair |
 |ReactableList				| A list that invoke BreakableFunc for Add,Remove,RemoveAt,Clear|
 |GeneralPurposeScanner		| A general purpose scanner. |
+|TreeModel					| A general purpose TreeModel with Xml support. |
 
 ## License
 
