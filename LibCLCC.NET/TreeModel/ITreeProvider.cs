@@ -48,4 +48,21 @@ namespace LibCLCC.NET.TreeModel
 		/// </summary>
 		void ClearProviders();
 	}
+	/// <summary>
+	/// Provides ability to get all names.
+	/// </summary>
+	public interface ITreeNodeNameProvider:INodeDefinitionProvider
+	{
+		/// <summary>
+		/// Register a definition provider
+		/// </summary>
+		/// <param name="nameProvider"></param>
+		void RegisterDefinitionProvider(INodeDefinitionProvider nameProvider);
+		/// <summary>
+		/// Remove a definition provider
+		/// </summary>
+		/// <param name="nameProvider"></param>
+		void RemoveDefinitionProvider(INodeDefinitionProvider nameProvider);
+
+	}
 }
