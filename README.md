@@ -23,6 +23,7 @@ Also, the library is aimed on providing functions in pure C# and compatible with
 | Name			| Description |
 | ---  | --- |
 |ConnectableList			| Help concatenate two lists |
+|ArrayTools, DictionaryTools| Some tools for array, dictionary and list. |
 |ChainAction				| A Chain Action|
 |BreakableFunc				| A breakable function chain, returning `true` will break the chain|
 |ObservableData				| A wrapper of data that will invoke breakable functions when the data is changed |
