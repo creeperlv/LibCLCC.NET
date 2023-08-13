@@ -41,7 +41,7 @@ namespace LibCLCC.NET.NUnit
 	{
 		public OperationResult<GeneralTree> CreateNode(string name)
 		{
-			OperationResult<GeneralTree> result = new OperationResult<GeneralTree>(null);
+			OperationResult<GeneralTree> result = new OperationResult<GeneralTree>(new ExampleNode0());
 			switch (name)
 			{
 				case "Node0":
@@ -61,7 +61,7 @@ namespace LibCLCC.NET.NUnit
 		{
 			var content = "<?xml version=\"1.0\" encoding=\"utf-16\"?><Node0><Node1 a=\"ASD\">" +
 				"<Node0 B=\"a123\" />" +
-				"<Node1 B=\"a1234\" />" +
+				"<Node1><Node1.B>a1234</Node1.B></Node1>" +
 				"<Node0 B=\"a1231\" />" +
 				"</Node1></Node0>";
 			XmlTreeProvider provider = new XmlTreeProvider();

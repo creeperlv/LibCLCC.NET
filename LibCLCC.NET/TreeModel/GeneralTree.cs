@@ -42,6 +42,25 @@ namespace LibCLCC.NET.TreeModel
 			return false;
 		}
 		/// <summary>
+		/// Add a child with name, e.g:
+		/// &lt;button.child&gt;&lt;TextBlock/&gt;&lt;/button.child&gt;
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="Child"></param>
+		/// <returns></returns>
+		public virtual OperationResult<bool> AddNamedChild(string name,GeneralTree Child)
+		{
+			return false;
+		}
+		/// <summary>
+		/// Get all of named children. Including every children of every name.
+		/// </summary>
+		/// <returns></returns>
+		public virtual Dictionary<string,List<GeneralTree>> GetAllNamedChildren()
+		{
+			return new Dictionary<string, List<GeneralTree>>();
+		}
+		/// <summary>
 		/// Returns all properties.
 		/// </summary>
 		/// <returns></returns>

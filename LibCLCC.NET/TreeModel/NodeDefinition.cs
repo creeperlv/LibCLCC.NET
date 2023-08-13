@@ -12,7 +12,7 @@ namespace LibCLCC.NET.TreeModel
 		/// </summary>
 		public string Name;
 		/// <summary>
-		/// Max count of children. <0 for infinite children, 0 for no child, and any positive number is a value fot
+		/// Max count of children. &lt;0 for infinite children, 0 for no child, and any positive number is a value fot
 		/// </summary>
 		public int MaxChildrenCount;
 		/// <summary>
