@@ -28,7 +28,7 @@ namespace LibCLCC.NET.TreeModel
             providers.Add(provider);
         }
         /// <summary>
-        /// 
+        /// Remove all providers in the provider list.
         /// </summary>
         public void ClearProviders()
         {
@@ -89,7 +89,7 @@ namespace LibCLCC.NET.TreeModel
                             if (childNode.ChildNodes.Count == 1)
                                 if (childNode.ChildNodes [ 0 ] is XmlText text)
                                 {
-                                    node.SetProperty(key , text.Value);
+                                    node.SetProperty(key , text.Value.Trim());
                                     continue;
                                 }
                             foreach (var CChild in childNode.ChildNodes)
@@ -115,7 +115,7 @@ namespace LibCLCC.NET.TreeModel
                         else
                         {
                             var content = childNode.InnerText;
-                            node.SetProperty(key , content);
+                            node.SetProperty(key , content.Trim());
                         }
                     }
                     continue;

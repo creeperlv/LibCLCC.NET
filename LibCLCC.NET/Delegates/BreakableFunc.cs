@@ -1,7 +1,5 @@
 ﻿using LibCLCC.NET.Collections;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LibCLCC.NET.Delegates
 {

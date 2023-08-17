@@ -1,8 +1,6 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace LibCLCC.NET.IO
 {
@@ -17,6 +15,7 @@ namespace LibCLCC.NET.IO
         /// <param name="stream"></param>
         /// <param name="buffer">Buffer, at least 4 bytes</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ReadInt32(this Stream stream, byte[] buffer)
         {
             stream.Read(buffer, 0, 4);
@@ -29,6 +28,7 @@ namespace LibCLCC.NET.IO
         /// <param name="stream"></param>
         /// <param name="buffer">Buffer, at least 8 bytes</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ReadInt64(this Stream stream, byte[] buffer)
         {
             stream.Read(buffer, 0, 8);
