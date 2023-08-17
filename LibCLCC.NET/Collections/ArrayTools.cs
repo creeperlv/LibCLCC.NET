@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace LibCLCC.NET.Collections
 {
@@ -15,6 +16,7 @@ namespace LibCLCC.NET.Collections
 		/// <param name="arr"></param>
 		/// <param name="t"></param>
 		/// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Contains<T>(T [ ] arr , T t)
 		{
 			foreach (var item in arr)
@@ -30,6 +32,7 @@ namespace LibCLCC.NET.Collections
 		/// <param name="arr"></param>
 		/// <param name="random"></param>
 		/// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static T PickOne<T>(this T [ ] arr , Random random)
 		{
 			return arr [ random.Next(arr.Length) ];
@@ -41,6 +44,7 @@ namespace LibCLCC.NET.Collections
 		/// <param name="arr"></param>
 		/// <param name="random"></param>
 		/// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static T PickOne<T>(this List<T> arr , Random random)
 		{
 			return arr [ random.Next(arr.Count) ];
