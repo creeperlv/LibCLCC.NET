@@ -33,6 +33,7 @@ Also, the library is aimed on providing functions in pure C# and compatible with
 |ReactableList				| A list that invoke BreakableFunc for Add,Remove,RemoveAt,Clear|
 |GeneralPurposeScanner		| A general purpose scanner. |
 |TreeModel					| A general purpose TreeModel with Xml support. |
+|RefString					| A struct to help reduce GC when dealing with string. |
 
 ## License
 
