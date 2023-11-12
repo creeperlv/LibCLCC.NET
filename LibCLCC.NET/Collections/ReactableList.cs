@@ -29,8 +29,8 @@ namespace LibCLCC.NET.Collections {
         /// Clear the list.
         /// </summary>
         public new void Clear() {
-            base.Clear();
             ClearReactChain.Invoke(this);
+            base.Clear();
         }
         /// <summary>
         /// Add an item.
