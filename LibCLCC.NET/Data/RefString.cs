@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Xml.XPath;
 
 namespace LibCLCC.NET.Data
 {
@@ -208,7 +209,7 @@ namespace LibCLCC.NET.Data
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public readonly int IndexOf(string str , int offset)
         {
-            return Ref.IndexOf(str , Offset + offset, Length);
+            return Ref.IndexOf(str , Offset + offset , Length);
         }
         /// <summary>
         /// Returns a zero-based index of the first appearance of a given string within this sturct. 
@@ -220,7 +221,7 @@ namespace LibCLCC.NET.Data
         /// <param name="count"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly int IndexOf(string str, int offset , int count)
+        public readonly int IndexOf(string str , int offset , int count)
         {
             return Ref.IndexOf(str , Offset + offset , Math.Min(Length , count));
         }
@@ -233,6 +234,31 @@ namespace LibCLCC.NET.Data
         {
             return iterate();
         }
+        /// <summary>
+        /// Split the string.
+        /// </summary>
+        /// <param name="splitters"></param>
+        /// <returns></returns>
+        public IEnumerator<RefString> Split(params char [ ] splitters)
+        {
+            RefString result = new RefString(this.Ref , Offset , 0);
+            for (int i = Offset ; i < Length ; i++)
+            {
+                var item = this.Ref [ i ];
+                foreach (var tester in splitters)
+                {
+                    if (item == tester)
+                    {
+                        yield return result;
+                        result = new RefString(this.Ref , i + 1 , 0);
+                        goto SKIP;
+                    }
+                }
+                result.Length++;
+            SKIP:;
+            }
+            yield return result;
+        }
         IEnumerator<char> iterate()
         {
             for (int i = Offset ; i < Length ; i++)
@@ -244,6 +270,14 @@ namespace LibCLCC.NET.Data
         IEnumerator IEnumerable.GetEnumerator()
         {
             return iterate();
+        }
+        /// <summary>
+        /// Convert to a new string.
+        /// </summary>
+        /// <returns></returns>
+        public string FinalizeString()
+        {
+            return Ref [ Offset..(Offset + Length) ];
         }
     }
 }
