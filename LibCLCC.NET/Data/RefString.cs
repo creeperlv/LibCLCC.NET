@@ -105,6 +105,7 @@ namespace LibCLCC.NET.Data
         public static RefString operator +(RefString L , int R)
         {
             RefString result = L;
+            result.Ref=L.Ref;
             result.Offset += R;
             result.Length -= R;
             if (result.Length < 0) throw new IndexOutOfRangeException();
@@ -121,6 +122,7 @@ namespace LibCLCC.NET.Data
         public static RefString operator -(RefString L , int R)
         {
             RefString result = L;
+            result.Ref = L.Ref;
             result.Offset -= R;
             result.Length += R;
             if (result.Offset < 0) throw new IndexOutOfRangeException();
@@ -259,6 +261,15 @@ namespace LibCLCC.NET.Data
             }
             yield return result;
         }
+        /// <summary>
+        /// Split the string.
+        /// </summary>
+        /// <param name="splitters"></param>
+        /// <returns></returns>
+        public RefStringSplitQuery SplitQuery(params char [ ] splitters)
+        {
+            return new RefStringSplitQuery{ query=Split(splitters) };
+        }
         IEnumerator<char> iterate()
         {
             for (int i = Offset ; i < Length ; i++)
@@ -278,6 +289,19 @@ namespace LibCLCC.NET.Data
         public string FinalizeString()
         {
             return Ref [ Offset..(Offset + Length) ];
+        }
+    }
+    public struct RefStringSplitQuery : IEnumerable<RefString>
+    {
+        internal IEnumerator<RefString> query;
+        public IEnumerator<RefString> GetEnumerator()
+        {
+            return query;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
