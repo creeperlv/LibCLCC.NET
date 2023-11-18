@@ -9,7 +9,7 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Description>The goal of this library is to make life easier and reduce rewriting every code every time a new project/tool is created.
 
-Also, the library is aimed on providing functions in pure C# and compatible with latest Unity3D (at least the main library).</Description>
+Also, the library is aimed on providing functions in pure C# and compatible with Unity3D (at least the main library).</Description>
     <PackageProjectUrl>https://github.com/creeperlv/LibCLCC.NET</PackageProjectUrl>
     <RepositoryUrl>https://github.com/creeperlv/LibCLCC.NET</RepositoryUrl>
   </PropertyGroup>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace LibCLCC.NET.AbstractFileSystem
 {
@@ -8,7 +9,8 @@ namespace LibCLCC.NET.AbstractFileSystem
     /// </summary>
     public class MappedDirectoryProvider : IDirectoryProvider
     {
-        Dictionary<string, IDirectoryProvider> PathMap = new Dictionary<string, IDirectoryProvider>();
+        internal Dictionary<string, IDirectoryProvider> PathMap = new Dictionary<string, IDirectoryProvider>();
+        internal Dictionary<string, FileSystemFileDescriptor> FileMap = new Dictionary<string, FileSystemFileDescriptor>();
         /// <summary>
         /// Close using real provider.
         /// </summary>
@@ -42,10 +44,15 @@ namespace LibCLCC.NET.AbstractFileSystem
         /// <returns></returns>
         public bool TryGetDirectory(PathQuery path, out FileDescriptor FD)
         {
+            
+            if (path.Query.ReachEnd|| path.Query.query.Current.Offset == path.Query.query.Current.Ref.Length)
+            {
+                return TryGetSelf(path.OriginalQueryPath.FinalizeString(), out FD);
+            }
             var p = path.Query.query.Current.FinalizeString();
             if (PathMap.ContainsKey(p))
             {
-                path.Query.query.MoveNext();
+                path.Query.MoveNext();
                 return PathMap[p].TryGetDirectory(path, out FD);
             }
             FD = null;
@@ -59,7 +66,16 @@ namespace LibCLCC.NET.AbstractFileSystem
         /// <returns></returns>
         public bool TryGetFile(PathQuery path, out FileDescriptor FD)
         {
+            if (path.Query.ReachEnd)
+            {
+                return TryGetSelf(path.OriginalQueryPath.FinalizeString(),out FD);
+            }
             var p = path.Query.query.Current.FinalizeString();
+            if (FileMap.ContainsKey(p))
+            {
+                FD = FileMap[p];
+                return true;
+            }
             if (PathMap.ContainsKey(p))
             {
                 path.Query.query.MoveNext();
@@ -69,7 +85,7 @@ namespace LibCLCC.NET.AbstractFileSystem
             return false;
         }
         /// <summary>
-        /// Try Open using FD's real descriptor.
+        /// Try Open using FD's real provider.
         /// </summary>
         /// <param name="FD"></param>
         /// <param name="fileMode"></param>
@@ -80,7 +96,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         /// <exception cref="System.NotImplementedException"></exception>
         public bool TryOpen(FileDescriptor FD, FileMode fileMode, FileAccess fileAccess, FileShare share, out Stream stream)
         {
-            return FD.provider.TryOpen(FD,fileMode, fileAccess, share,out stream);
+            return FD.provider.TryOpen(FD, fileMode, fileAccess, share, out stream);
         }
         /// <summary>
         /// Query an existing file descriptor.
@@ -98,6 +114,17 @@ namespace LibCLCC.NET.AbstractFileSystem
             }
             FD = null;
             return false;
+        }
+        /// <summary>
+        /// Get File Descriptor representation of this provider.
+        /// </summary>
+        /// <param name="map_path"></param>
+        /// <param name="FD"></param>
+        /// <returns></returns>
+        public bool TryGetSelf(string map_path, out FileDescriptor FD)
+        {
+            FD=new MappedDirectoryFileDescriptor(this,map_path);
+            return true;
         }
     }
 }

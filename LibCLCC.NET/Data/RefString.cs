@@ -291,17 +291,4 @@ namespace LibCLCC.NET.Data
             return Ref [ Offset..(Offset + Length) ];
         }
     }
-    public struct RefStringSplitQuery : IEnumerable<RefString>
-    {
-        internal IEnumerator<RefString> query;
-        public IEnumerator<RefString> GetEnumerator()
-        {
-            return query;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
 }

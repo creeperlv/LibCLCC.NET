@@ -70,7 +70,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         /// <param name="TargetPath"></param>
         /// <param name="FD"></param>
         /// <returns></returns>
-        public bool TryQuery(string TargetPath , out FileDescriptor? FD)
+        public bool TryQuery(string TargetPath , out FileDescriptor FD)
         {
             var query=(RefString)TargetPath;
             foreach (var item in PathMap)
@@ -116,7 +116,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         {
             var pq=new PathQuery { OriginalQueryPath = path };
             pq.Query=pq.OriginalQueryPath.SplitQuery('/','\\',Path.DirectorySeparatorChar);
-            pq.Query.query.MoveNext();
+            pq.Query.MoveNext();
             return pq;
         }
         /// <summary>
@@ -127,7 +127,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         {
             var pq=new PathQuery { OriginalQueryPath = path };
             pq.Query=pq.OriginalQueryPath.SplitQuery('/','\\',Path.DirectorySeparatorChar);
-            pq.Query.query.MoveNext();
+            pq.Query.MoveNext();
             return pq;
         }
     }
