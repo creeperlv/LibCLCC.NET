@@ -102,7 +102,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         {
             if (FD is FileSystemFileDescriptor fsfd)
             {
-                if (fsfd.info is FileInfo fi)
+                if (fsfd.UnderlyingFileSystemInfo is FileInfo fi)
                 {
                     stream = fi.Open(fileMode, fileAccess, share);
                     return true;
