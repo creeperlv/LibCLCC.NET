@@ -9,10 +9,14 @@ namespace LibCLCC.NET.AbstractFileSystem
     /// </summary>
     public sealed class FileSystemFileDescriptor : FileDescriptor
     {
-#pragma warning disable CS0649 // Field 'FileSystemFileDescriptor.OpendStream' is never assigned to, and will always have its default value null
-        internal Stream OpendStream;
-#pragma warning restore CS0649 // Field 'FileSystemFileDescriptor.OpendStream' is never assigned to, and will always have its default value null
-        internal FileSystemInfo info;
+        /// <summary>
+        /// Opend Stream of the file.
+        /// </summary>
+        public Stream OpendStream;
+        /// <summary>
+        /// Exposed for convenience. Re-assign with care!
+        /// </summary>
+        public FileSystemInfo UnderlyingFileSystemInfo;
         /// <summary>
         /// Initialize the descriptor
         /// </summary>
@@ -21,7 +25,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         /// <param name="info"></param>
         public FileSystemFileDescriptor(IDirectoryProvider provider, string path, FileSystemInfo info) : base(provider, path)
         {
-            this.info = info;
+            this.UnderlyingFileSystemInfo = info;
         }
         /// <summary>
         /// Dispose opend stream.
@@ -36,7 +40,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         /// <returns></returns>
         public override bool IsExists()
         {
-            return info.Exists;
+            return UnderlyingFileSystemInfo.Exists;
         }
         /// <summary>
         /// Try delete the file descriptor.
@@ -46,12 +50,12 @@ namespace LibCLCC.NET.AbstractFileSystem
         {
             try
             {
-                if (info is FileInfo fi)
+                if (UnderlyingFileSystemInfo is FileInfo fi)
                 {
                     fi.Delete();
                     return true;
                 }
-                else if (info is DirectoryInfo di)
+                else if (UnderlyingFileSystemInfo is DirectoryInfo di)
                 {
                     di.Delete(true);
                     return true;
@@ -68,7 +72,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         /// <returns></returns>
         public override bool TryCreate()
         {
-            if (info is FileInfo fi)
+            if (UnderlyingFileSystemInfo is FileInfo fi)
             {
                 try
                 {
@@ -80,7 +84,7 @@ namespace LibCLCC.NET.AbstractFileSystem
                     return false;
                 }
             }
-            else if (info is DirectoryInfo di)
+            else if (UnderlyingFileSystemInfo is DirectoryInfo di)
             {
                 try
                 {
@@ -103,7 +107,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         /// <returns></returns>
         public override bool TryOpen(FileMode fileMode, FileAccess fileAccess, FileShare share, out Stream stream)
         {
-            if (info is FileInfo fi)
+            if (UnderlyingFileSystemInfo is FileInfo fi)
             {
                 try
                 {
@@ -126,7 +130,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         public override IEnumerator<FileDescriptor> EnumerateDirectories()
         {
             if (!IsDirectory) throw new NotSupportedException();
-            if (info is DirectoryInfo di)
+            if (UnderlyingFileSystemInfo is DirectoryInfo di)
             {
                 foreach (var item in di.EnumerateDirectories())
                 {
@@ -143,7 +147,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         public override IEnumerator<FileDescriptor> EnumerateFiles()
         {
             if (!IsDirectory) throw new NotSupportedException();
-            if (info is DirectoryInfo di)
+            if (UnderlyingFileSystemInfo is DirectoryInfo di)
             {
                 foreach (var item in di.EnumerateFiles())
                 {
@@ -160,7 +164,7 @@ namespace LibCLCC.NET.AbstractFileSystem
         public override IEnumerator<FileDescriptor> EnumerateAnyDescriptors()
         {
             if (!IsDirectory) throw new NotSupportedException();
-            if (info is DirectoryInfo di)
+            if (UnderlyingFileSystemInfo is DirectoryInfo di)
             {
                 foreach (var item in di.EnumerateFileSystemInfos())
                 {
