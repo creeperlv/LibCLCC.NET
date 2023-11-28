@@ -25,5 +25,21 @@
         {
             Data = data;
         }
+        /// <summary>
+        /// Auto encapsulate.
+        /// </summary>
+        /// <param name="data"></param>
+        public static implicit operator Ref<T>(T data)
+        {
+            return new Ref<T>(data);
+        }
+        /// <summary>
+        /// Get the data.
+        /// </summary>
+        /// <param name="data"></param>
+        public static implicit operator T(Ref<T> data)
+        {
+            return data.Data;
+        }
     }
 }
