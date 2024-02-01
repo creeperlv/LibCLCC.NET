@@ -36,7 +36,7 @@ namespace LibCLCC.NET.Data
         /// <param name="offset"></param>
         /// <param name="length"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public RefString(string string_value , int offset , int length)
+        public RefString(string string_value, int offset, int length)
         {
             Ref = string_value;
             Offset = offset;
@@ -47,12 +47,12 @@ namespace LibCLCC.NET.Data
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public char this [ int index ]
+        public char this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                return Ref [ index + Offset ];
+                return Ref[index + Offset];
             }
         }
 
@@ -67,7 +67,7 @@ namespace LibCLCC.NET.Data
         /// </summary>
         /// <param name="s"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator RefString(string s) => new RefString { Ref = s , Offset = 0 , Length = s.Length };
+        public static implicit operator RefString(string s) => new RefString { Ref = s, Offset = 0, Length = s.Length };
         /// <summary>
         /// Convert a RefString to ReadOnlySpan
         /// </summary>
@@ -79,7 +79,7 @@ namespace LibCLCC.NET.Data
             {
                 throw new IndexOutOfRangeException();
             }
-            return s.Ref.AsSpan(s.Offset , s.Length);
+            return s.Ref.AsSpan(s.Offset, s.Length);
         }
         /// <summary>
         /// If the referred string is null.
@@ -102,10 +102,10 @@ namespace LibCLCC.NET.Data
         /// <returns></returns>
         /// <exception cref="IndexOutOfRangeException"></exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static RefString operator +(RefString L , int R)
+        public static RefString operator +(RefString L, int R)
         {
             RefString result = L;
-            result.Ref=L.Ref;
+            result.Ref = L.Ref;
             result.Offset += R;
             result.Length -= R;
             if (result.Length < 0) throw new IndexOutOfRangeException();
@@ -119,7 +119,7 @@ namespace LibCLCC.NET.Data
         /// <returns></returns>
         /// <exception cref="IndexOutOfRangeException"></exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static RefString operator -(RefString L , int R)
+        public static RefString operator -(RefString L, int R)
         {
             RefString result = L;
             result.Ref = L.Ref;
@@ -127,6 +127,106 @@ namespace LibCLCC.NET.Data
             result.Length += R;
             if (result.Offset < 0) throw new IndexOutOfRangeException();
             return result;
+        }
+        /// <summary>
+        /// Check if equal to a string.
+        /// </summary>
+        /// <param name="L"></param>
+        /// <param name="R"></param>
+        /// <returns></returns>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(RefString L, string R)
+        {
+
+            var i = L.Ref.IndexOf(R, L.Offset);
+            var Len = R.Length;
+            return (i == 0 && Len == L.Length);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="R"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool StartsWith(string R)
+        {
+            return this.Ref.IndexOf(R, Offset) == 0;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="R"></param>
+        /// <param name="_offset"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool StartsWith(string R, int _offset)
+        {
+            return this.Ref.IndexOf(R, Offset + _offset) == 0;
+        }
+        char ToOtherCase(char c)
+        {
+            if (c >= 'A' && c <= 'Z')
+            {
+                return (char)(c - 'A' + 'a');
+            }
+            if (c >= 'a' && c <= 'z')
+            {
+                return (char)(c - +'A' - 'a');
+            }
+            return c;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="R"></param>
+        /// <param name="_offset"></param>
+        /// <param name="CaseIrrelevant"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool StartsWith(string R, int _offset, bool CaseIrrelevant)
+        {
+            if (CaseIrrelevant)
+            {
+
+                for (int i = 0; i < R.Length; i++)
+                {
+                    char v = R[i];
+                    if (Ref[Offset + _offset + i] != v && Ref[Offset + _offset + i] != ToOtherCase(v))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return this.Ref.IndexOf(R, Offset + _offset) == 0;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="R"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool EndsWith(string R)
+        {
+            return this.Ref.IndexOf(R, Offset) == (Length - R.Length);
+        }
+        /// <summary>
+        /// Move the offset of the string. The length will be adjusted as well.
+        /// </summary>
+        /// <param name="L"></param>
+        /// <param name="R"></param>
+        /// <returns></returns>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(RefString L, string R)
+        {
+            var i = L.Ref.IndexOf(R, L.Offset);
+            var Len = R.Length;
+            return (i != 0 || Len != L.Length);
         }
         /// <summary>
         /// Retrieves a substring. The substring has a given start position and continues to the end of the RefString.
@@ -145,7 +245,7 @@ namespace LibCLCC.NET.Data
         /// <param name="SubStringLength"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly RefString Substring(int StartIndex , int SubStringLength)
+        public readonly RefString Substring(int StartIndex, int SubStringLength)
         {
             var r = this + StartIndex;
             r.Length = SubStringLength;
@@ -160,7 +260,7 @@ namespace LibCLCC.NET.Data
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public readonly int IndexOf(char c)
         {
-            return Ref.IndexOf(c , Offset , Length);
+            return Ref.IndexOf(c, Offset, Length);
         }
         /// <summary>
         /// Returns a zero-based index of the first appearance of a given string within this sturct. 
@@ -171,7 +271,7 @@ namespace LibCLCC.NET.Data
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public readonly int IndexOf(string str)
         {
-            return Ref.IndexOf(str , Offset , Length);
+            return Ref.IndexOf(str, Offset, Length);
         }
         /// <summary>
         /// Returns a zero-based index of the first appearance of a given char within this sturct. 
@@ -182,9 +282,9 @@ namespace LibCLCC.NET.Data
         /// <param name="offset"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly int IndexOf(char c , int offset)
+        public readonly int IndexOf(char c, int offset)
         {
-            return Ref.IndexOf(c , Offset + offset , Length);
+            return Ref.IndexOf(c, Offset + offset, Length);
         }
         /// <summary>
         /// Returns a zero-based index of the first appearance of a given char within this sturct. 
@@ -196,9 +296,9 @@ namespace LibCLCC.NET.Data
         /// <param name="count"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly int IndexOf(char c , int offset , int count)
+        public readonly int IndexOf(char c, int offset, int count)
         {
-            return Ref.IndexOf(c , Offset + offset , Math.Min(Length , count));
+            return Ref.IndexOf(c, Offset + offset, Math.Min(Length, count));
         }
         /// <summary>
         /// Returns a zero-based index of the first appearance of a given string within this sturct. 
@@ -209,9 +309,9 @@ namespace LibCLCC.NET.Data
         /// <param name="offset"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly int IndexOf(string str , int offset)
+        public readonly int IndexOf(string str, int offset)
         {
-            return Ref.IndexOf(str , Offset + offset , Length);
+            return Ref.IndexOf(str, Offset + offset, Length);
         }
         /// <summary>
         /// Returns a zero-based index of the first appearance of a given string within this sturct. 
@@ -223,9 +323,9 @@ namespace LibCLCC.NET.Data
         /// <param name="count"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly int IndexOf(string str , int offset , int count)
+        public readonly int IndexOf(string str, int offset, int count)
         {
-            return Ref.IndexOf(str , Offset + offset , Math.Min(Length , count));
+            return Ref.IndexOf(str, Offset + offset, Math.Min(Length, count));
         }
         /// <summary>
         /// Iterate through characters in range [offset..offset+length].
@@ -241,18 +341,18 @@ namespace LibCLCC.NET.Data
         /// </summary>
         /// <param name="splitters"></param>
         /// <returns></returns>
-        public IEnumerator<RefString> Split(params char [ ] splitters)
+        public IEnumerator<RefString> Split(params char[] splitters)
         {
-            RefString result = new RefString(this.Ref , Offset , 0);
-            for (int i = Offset ; i < Length ; i++)
+            RefString result = new RefString(this.Ref, Offset, 0);
+            for (int i = Offset; i < Length; i++)
             {
-                var item = this.Ref [ i ];
+                var item = this.Ref[i];
                 foreach (var tester in splitters)
                 {
                     if (item == tester)
                     {
                         yield return result;
-                        result = new RefString(this.Ref , i + 1 , 0);
+                        result = new RefString(this.Ref, i + 1, 0);
                         goto SKIP;
                     }
                 }
@@ -266,15 +366,15 @@ namespace LibCLCC.NET.Data
         /// </summary>
         /// <param name="splitters"></param>
         /// <returns></returns>
-        public RefStringSplitQuery SplitQuery(params char [ ] splitters)
+        public RefStringSplitQuery SplitQuery(params char[] splitters)
         {
-            return new RefStringSplitQuery{ query=Split(splitters) };
+            return new RefStringSplitQuery { query = Split(splitters) };
         }
         IEnumerator<char> iterate()
         {
-            for (int i = Offset ; i < Length ; i++)
+            for (int i = Offset; i < Length; i++)
             {
-                yield return Ref [ i ];
+                yield return Ref[i];
             }
             yield break;
         }
@@ -288,7 +388,7 @@ namespace LibCLCC.NET.Data
         /// <returns></returns>
         public string FinalizeString()
         {
-            return Ref [ Offset..(Offset + Length) ];
+            return Ref[Offset..(Offset + Length)];
         }
     }
 }
