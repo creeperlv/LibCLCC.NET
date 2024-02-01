@@ -17,7 +17,7 @@ namespace LibCLCC.NET.Data
         /// <param name="pattern"></param>
         /// <param name="Start"></param>
         /// <returns></returns>
-        public static bool StartsWith(this string value , string pattern , int Start)
+        public static bool StartsWith(this string value, string pattern, int Start)
         {
             if (value.Length < pattern.Length + Start)
             {
@@ -25,56 +25,46 @@ namespace LibCLCC.NET.Data
             }
 
             var Length = pattern.Length;
-            for (int i = 0 ; i < Length ; i++)
+            for (int i = 0; i < Length; i++)
             {
-                if (value [ i + Start ] != pattern [ i ])
+                if (value[i + Start] != pattern[i])
                 {
                     return false;
                 }
             }
             return true;
         }
-        /// <summary>
-        /// Parse a string to an int32.
-        /// <br/>
-        /// Accepted format: 0x, 0o, 0b and scientific notation.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static bool TryParse(this string input , out int data)
+        public static bool TryParse(this RefString input, out int data)
         {
-
             bool Negative = input.StartsWith("-");
-            input = input.ToUpper();
             int Start = 0;
             int Length = input.Length;
             if (Negative)
             {
                 Start += 1;
             }
-            if (input.EndsWith("L"))
+            if (input.EndsWith("L") || input.EndsWith("l"))
             {
                 data = -1;
                 return false;
             }
-            if (input.StartsWith("0X" , Start))
+            if (input.StartsWith("0X", Start, true))
             {
                 Start += 2;
                 int _data = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 16;
-                    if ((input [ i ] >= '0' && input [ i ] <= '9'))
+                    if ((input[i] >= '0' && input[i] <= '9'))
                     {
-                        _data += input [ i ] - '0';
+                        _data += input[i] - '0';
                     }
                     else
-                    if ((input [ i ] >= 'A' && input [ i ] <= 'F'))
+                    if ((input[i] >= 'A' && input[i] <= 'F'))
                     {
-                        _data += input [ i ] - 'A' + 10;
+                        _data += input[i] - 'A' + 10;
                     }
-                    else if ((input [ i ] == '_')) continue;
+                    else if ((input[i] == '_')) continue;
                     else
                     {
                         data = -1;
@@ -84,18 +74,18 @@ namespace LibCLCC.NET.Data
                 data = _data * (Negative ? -1 : 1);
                 return true;
             }
-            else if (input.StartsWith("0O" , Start))
+            else if (input.StartsWith("0O", Start, true))
             {
                 Start += 2;
                 int _data = 8;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 16;
-                    if ((input [ i ] >= '0' && input [ i ] <= '7'))
+                    if ((input[i] >= '0' && input[i] <= '7'))
                     {
-                        _data += input [ i ] - '0';
+                        _data += input[i] - '0';
                     }
-                    else if (input [ i ] == '_') continue;
+                    else if (input[i] == '_') continue;
                     else
                     {
                         data = -1;
@@ -106,23 +96,23 @@ namespace LibCLCC.NET.Data
                 return true;
             }
             else
-            if (input.StartsWith("0B" , Start))
+            if (input.StartsWith("0B", Start, true))
             {
                 Start += 2;
                 int _data = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 2;
-                    if (input [ i ] == '0')
+                    if (input[i] == '0')
                     {
                         _data += 0;
                     }
                     else
-                    if (input [ i ] == '1')
+                    if (input[i] == '1')
                     {
                         _data += 1;
                     }
-                    else if ((input [ i ] == '_')) continue;
+                    else if ((input[i] == '_')) continue;
                     else
                     {
                         data = -1;
@@ -138,22 +128,22 @@ namespace LibCLCC.NET.Data
                 int _data = 0;
                 int exp = 0;
                 byte mde = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     if (mde == 0)
                         _data *= 10;
                     if (mde == 1)
                         exp *= 10;
-                    if ((input [ i ] >= '0' && input [ i ] <= '9'))
+                    if ((input[i] >= '0' && input[i] <= '9'))
                     {
                         if (mde == 0)
-                            _data += (input [ i ] - '0');
+                            _data += (input[i] - '0');
                         if (mde == 1)
-                            exp += (input [ i ] - '0');
+                            exp += (input[i] - '0');
                     }
-                    else if ((input [ i ] == '_')) continue;
-                    else if ((input [ i ] == 'E')) mde = 1;
-                    else if ((input [ i ] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == 'E')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
                     else
                     {
                         data = -1;
@@ -161,11 +151,151 @@ namespace LibCLCC.NET.Data
                     }
                 }
                 if (exp > 0)
-                    for (int i = 0 ; i < exp ; i++)
+                    for (int i = 0; i < exp; i++)
                     {
                         _data *= 10;
                     }
-                else for (int i = 0 ; i > exp ; i--)
+                else for (int i = 0; i > exp; i--)
+                    {
+                        _data /= 10;
+                    }
+                data = _data * (Negative ? -1 : 1);
+                return true;
+            }
+
+        }
+        /// <summary>
+        /// Parse a string to an int32.
+        /// <br/>
+        /// Accepted format: 0x, 0o, 0b and scientific notation.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool TryParse(this string input, out int data)
+        {
+
+            bool Negative = input.StartsWith("-");
+            input = input.ToUpper();
+            int Start = 0;
+            int Length = input.Length;
+            if (Negative)
+            {
+                Start += 1;
+            }
+            if (input.EndsWith("L"))
+            {
+                data = -1;
+                return false;
+            }
+            if (input.StartsWith("0X", Start))
+            {
+                Start += 2;
+                int _data = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 16;
+                    if ((input[i] >= '0' && input[i] <= '9'))
+                    {
+                        _data += input[i] - '0';
+                    }
+                    else
+                    if ((input[i] >= 'A' && input[i] <= 'F'))
+                    {
+                        _data += input[i] - 'A' + 10;
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else
+                    {
+                        data = -1;
+                        return false;
+                    }
+                }
+                data = _data * (Negative ? -1 : 1);
+                return true;
+            }
+            else if (input.StartsWith("0O", Start))
+            {
+                Start += 2;
+                int _data = 8;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 16;
+                    if ((input[i] >= '0' && input[i] <= '7'))
+                    {
+                        _data += input[i] - '0';
+                    }
+                    else if (input[i] == '_') continue;
+                    else
+                    {
+                        data = -1;
+                        return false;
+                    }
+                }
+                data = _data * (Negative ? -1 : 1);
+                return true;
+            }
+            else
+            if (input.StartsWith("0B", Start))
+            {
+                Start += 2;
+                int _data = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 2;
+                    if (input[i] == '0')
+                    {
+                        _data += 0;
+                    }
+                    else
+                    if (input[i] == '1')
+                    {
+                        _data += 1;
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else
+                    {
+                        data = -1;
+                        return false;
+                    }
+                }
+                data = _data * (Negative ? -1 : 1);
+                return true;
+            }
+            else
+            {
+
+                int _data = 0;
+                int exp = 0;
+                byte mde = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    if (mde == 0)
+                        _data *= 10;
+                    if (mde == 1)
+                        exp *= 10;
+                    if ((input[i] >= '0' && input[i] <= '9'))
+                    {
+                        if (mde == 0)
+                            _data += (input[i] - '0');
+                        if (mde == 1)
+                            exp += (input[i] - '0');
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == 'E')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else
+                    {
+                        data = -1;
+                        return false;
+                    }
+                }
+                if (exp > 0)
+                    for (int i = 0; i < exp; i++)
+                    {
+                        _data *= 10;
+                    }
+                else for (int i = 0; i > exp; i--)
                     {
                         _data /= 10;
                     }
@@ -181,7 +311,7 @@ namespace LibCLCC.NET.Data
         /// <param name="input"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static bool TryParse(this string input , out float data)
+        public static bool TryParse(this string input, out float data)
         {
 
             bool Negative = input.StartsWith("-");
@@ -201,28 +331,32 @@ namespace LibCLCC.NET.Data
                 int _data = 0;
                 int exp = 0;
                 byte mde = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
-                    if (mde == 0)
+                    if ((mde == 0 || mde == 2))
                         _data *= 10;
                     if (mde == 1)
                         exp *= 10;
-                    if ((input [ i ] >= '0' && input [ i ] <= '9'))
+                    if ((input[i] >= '0' && input[i] <= '9'))
                     {
                         if (mde == 0)
-                            _data += (input [ i ] - '0');
+                            _data += (input[i] - '0');
                         if (mde == 2)
                         {
-                            _data += (input [ i ] - '0');
-                            exp += 1;
+                            _data += (input[i] - '0');
+                            exp -= 1;
                         }
                         if (mde == 1)
-                            exp += (input [ i ] - '0');
+                            exp += (input[i] - '0');
                     }
-                    else if ((input [ i ] == '_')) continue;
-                    else if ((input [ i ] == '.')) mde = 2;
-                    else if ((input [ i ] == 'E')) mde = 1;
-                    else if ((input [ i ] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == '.'))
+                    {
+                        mde = 2;
+                        _data /= 10;
+                    }
+                    else if ((input[i] == 'E') || (input[i] == 'e')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
                     else
                     {
                         data = -1;
@@ -231,11 +365,82 @@ namespace LibCLCC.NET.Data
                 }
                 data = _data * (Negative ? -1 : 1);
                 if (exp > 0)
-                    for (int i = 0 ; i < exp ; i++)
+                    for (int i = 0; i < exp; i++)
                     {
                         data *= 10f;
                     }
-                else for (int i = 0 ; i > exp ; i--)
+                else for (int i = 0; i > exp; i--)
+                    {
+                        data /= 10f;
+                    }
+                return true;
+            }
+        }
+        /// <summary>
+        /// Parse a string to a single.
+        /// <br/>
+        /// Accepted format: scientific notation.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool TryParse(this RefString input, out float data)
+        {
+            bool Negative = input.StartsWith("-");
+            int Start = 0;
+            int Length = input.Length;
+            if (Negative)
+            {
+                Start = 1;
+            }
+            if (input.EndsWith("F") || input.EndsWith("f"))
+            {
+                Length -= 1;
+            }
+            {
+
+                int _data = 0;
+                int exp = 0;
+                byte mde = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    if ((mde == 0 || mde == 2))
+                        _data *= 10;
+                    if (mde == 1)
+                        exp *= 10;
+                    if ((input[i] >= '0' && input[i] <= '9'))
+                    {
+                        if (mde == 0)
+                            _data += (input[i] - '0');
+                        if (mde == 2)
+                        {
+                            _data += (input[i] - '0');
+                            exp -= 1;
+                        }
+                        if (mde == 1)
+                            exp += (input[i] - '0');
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == '.'))
+                    {
+                        mde = 2;
+                        _data/=10;
+                    }
+                    else if ((input[i] == 'E') || (input[i] == 'e')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else
+                    {
+                        data = -1;
+                        return false;
+                    }
+                }
+                data = _data * (Negative ? -1 : 1);
+                if (exp > 0)
+                    for (int i = 0; i < exp; i++)
+                    {
+                        data *= 10f;
+                    }
+                else for (int i = 0; i > exp; i--)
                     {
                         data /= 10f;
                     }
@@ -250,7 +455,7 @@ namespace LibCLCC.NET.Data
         /// <param name="input"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static bool TryParse(this string input , out double data)
+        public static bool TryParse(this string input, out double data)
         {
 
             bool Negative = input.StartsWith("-");
@@ -270,28 +475,28 @@ namespace LibCLCC.NET.Data
                 long _data = 0;
                 int exp = 0;
                 short mde = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     if (mde == 0)
                         _data *= 10;
                     if (mde == 1)
                         exp *= 10;
-                    if ((input [ i ] >= '0' && input [ i ] <= '9'))
+                    if ((input[i] >= '0' && input[i] <= '9'))
                     {
                         if (mde == 0)
-                            _data += (input [ i ] - '0');
+                            _data += (input[i] - '0');
                         if (mde == 2)
                         {
-                            _data += (input [ i ] - '0');
+                            _data += (input[i] - '0');
                             exp += 1;
                         }
                         if (mde == 1)
-                            exp += (input [ i ] - '0');
+                            exp += (input[i] - '0');
                     }
-                    else if ((input [ i ] == '_')) continue;
-                    else if ((input [ i ] == '.')) mde = 2;
-                    else if ((input [ i ] == 'E')) mde = 1;
-                    else if ((input [ i ] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == '.')) mde = 2;
+                    else if ((input[i] == 'E')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
                     else
                     {
                         data = -1;
@@ -300,11 +505,83 @@ namespace LibCLCC.NET.Data
                 }
                 data = _data * (Negative ? -1 : 1);
                 if (exp > 0)
-                    for (int i = 0 ; i < exp ; i++)
+                    for (int i = 0; i < exp; i++)
                     {
                         data *= 10f;
                     }
-                else for (int i = 0 ; i > exp ; i--)
+                else for (int i = 0; i > exp; i--)
+                    {
+                        data /= 10f;
+                    }
+                return true;
+            }
+        }
+        /// <summary>
+        /// Parse a string to a double.
+        /// <br/>
+        /// Accepted format: scientific notation.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool TryParse(this RefString input, out double data)
+        {
+
+            bool Negative = input.StartsWith("-");
+            int Start = 0;
+            int Length = input.Length;
+            if (Negative)
+            {
+                Start = 1;
+            }
+            if (input[input.Length - 1] == 'D' || input[input.Length - 1] == 'd')
+            {
+                Length -= 1;
+            }
+            {
+
+                long _data = 0;
+                int exp = 0;
+                short mde = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    if ((mde == 0 || mde == 2))
+                        _data *= 10;
+                    if (mde == 1)
+                        exp *= 10;
+                    if ((input[i] >= '0' && input[i] <= '9'))
+                    {
+                        if (mde == 0)
+                            _data += (input[i] - '0');
+                        if (mde == 2)
+                        {
+                            _data += (input[i] - '0');
+                            exp -= 1;
+                        }
+                        if (mde == 1)
+                            exp += (input[i] - '0');
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == '.'))
+                    {
+                        mde = 2;
+                        _data/=10;
+                    }
+                    else if ((input[i] == 'E') || (input[i] == 'e')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else
+                    {
+                        data = -1;
+                        return false;
+                    }
+                }
+                data = _data * (Negative ? -1 : 1);
+                if (exp > 0)
+                    for (int i = 0; i < exp; i++)
+                    {
+                        data *= 10f;
+                    }
+                else for (int i = 0; i > exp; i--)
                     {
                         data /= 10f;
                     }
@@ -319,7 +596,7 @@ namespace LibCLCC.NET.Data
         /// <param name="input"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static bool TryParse(this string input , out uint data)
+        public static bool TryParse(this string input, out uint data)
         {
 
             bool Negative = input.StartsWith("-");
@@ -348,19 +625,19 @@ namespace LibCLCC.NET.Data
             {
                 Start += 2;
                 uint _data = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 16;
-                    if ((input [ i ] >= '0' && input [ i ] <= '9'))
+                    if ((input[i] >= '0' && input[i] <= '9'))
                     {
-                        _data += (uint)input [ i ] - '0';
+                        _data += (uint)input[i] - '0';
                     }
                     else
-                    if ((input [ i ] >= 'A' && input [ i ] <= 'F'))
+                    if ((input[i] >= 'A' && input[i] <= 'F'))
                     {
-                        _data += (uint)input [ i ] - 'A' + 10;
+                        _data += (uint)input[i] - 'A' + 10;
                     }
-                    else if ((input [ i ] == '_')) continue;
+                    else if ((input[i] == '_')) continue;
                     else
                     {
                         data = 0;
@@ -374,14 +651,14 @@ namespace LibCLCC.NET.Data
             {
                 Start += 2;
                 uint _data = 8;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 16;
-                    if ((input [ i ] >= '0' && input [ i ] <= '7'))
+                    if ((input[i] >= '0' && input[i] <= '7'))
                     {
-                        _data += (uint)input [ i ] - '0';
+                        _data += (uint)input[i] - '0';
                     }
-                    else if ((input [ i ] == '_')) continue;
+                    else if ((input[i] == '_')) continue;
                     else
                     {
                         data = 0;
@@ -396,19 +673,19 @@ namespace LibCLCC.NET.Data
             {
                 Start += 2;
                 uint _data = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 2;
-                    if (input [ i ] == '0')
+                    if (input[i] == '0')
                     {
                         _data += 0;
                     }
                     else
-                    if (input [ i ] == '1')
+                    if (input[i] == '1')
                     {
                         _data += 1;
                     }
-                    else if ((input [ i ] == '_')) continue;
+                    else if ((input[i] == '_')) continue;
                     else
                     {
                         data = 0;
@@ -424,22 +701,22 @@ namespace LibCLCC.NET.Data
                 uint _data = 0;
                 int exp = 0;
                 byte mde = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     if (mde == 0)
                         _data *= 10;
                     if (mde == 1)
                         exp *= 10;
-                    if ((input [ i ] >= '0' && input [ i ] <= '9'))
+                    if ((input[i] >= '0' && input[i] <= '9'))
                     {
                         if (mde == 0)
-                            _data += (uint)(input [ i ] - '0');
+                            _data += (uint)(input[i] - '0');
                         if (mde == 1)
-                            exp += (input [ i ] - '0');
+                            exp += (input[i] - '0');
                     }
-                    else if ((input [ i ] == '_')) continue;
-                    else if ((input [ i ] == 'E')) mde = 1;
-                    else if ((input [ i ] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == 'E')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
                     else
                     {
                         data = 0;
@@ -447,11 +724,158 @@ namespace LibCLCC.NET.Data
                     }
                 }
                 if (exp > 0)
-                    for (int i = 0 ; i < exp ; i++)
+                    for (int i = 0; i < exp; i++)
                     {
                         _data *= 10;
                     }
-                else for (int i = 0 ; i > exp ; i--)
+                else for (int i = 0; i > exp; i--)
+                    {
+                        _data /= 10;
+                    }
+                data = _data;
+                return true;
+            }
+        }
+        /// <summary>
+        /// Parse a string to an unsigned int32.
+        /// <br/>
+        /// Accepted format: 0x, 0o, 0b and scientific notation. As well as ending with `u`
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool TryParse(this RefString input, out uint data)
+        {
+
+            bool Negative = input.StartsWith("-");
+            if (Negative)
+            {
+                data = 0;
+                return false;
+            }
+            int Start = 0;
+            int Length = input.Length;
+            if (Negative)
+            {
+                Start = 1;
+            }
+            if (input.EndsWith("L") || input.EndsWith("l"))
+            {
+                data = 0;
+                return false;
+            }
+            if (input.EndsWith("U"))
+            {
+                Length -= 1;
+            }
+            if (input.StartsWith("0X", Start, true))
+            {
+                Start += 2;
+                uint _data = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 16;
+                    if ((input[i] >= '0' && input[i] <= '9'))
+                    {
+                        _data += (uint)input[i] - '0';
+                    }
+                    else
+                    if ((input[i] >= 'A' && input[i] <= 'F'))
+                    {
+                        _data += (uint)input[i] - 'A' + 10;
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else
+                    {
+                        data = 0;
+                        return false;
+                    }
+                }
+                data = _data;
+                return true;
+            }
+            else if (input.StartsWith("0O", Start, true))
+            {
+                Start += 2;
+                uint _data = 8;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 16;
+                    if ((input[i] >= '0' && input[i] <= '7'))
+                    {
+                        _data += (uint)input[i] - '0';
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else
+                    {
+                        data = 0;
+                        return false;
+                    }
+                }
+                data = _data;
+                return true;
+            }
+            else
+            if (input.StartsWith("0B", Start, true))
+            {
+                Start += 2;
+                uint _data = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 2;
+                    if (input[i] == '0')
+                    {
+                        _data += 0;
+                    }
+                    else
+                    if (input[i] == '1')
+                    {
+                        _data += 1;
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else
+                    {
+                        data = 0;
+                        return false;
+                    }
+                }
+                data = _data;
+                return true;
+            }
+            else
+            {
+
+                uint _data = 0;
+                int exp = 0;
+                byte mde = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    if (mde == 0)
+                        _data *= 10;
+                    if (mde == 1)
+                        exp *= 10;
+                    if ((input[i] >= '0' && input[i] <= '9'))
+                    {
+                        if (mde == 0)
+                            _data += (uint)(input[i] - '0');
+                        if (mde == 1)
+                            exp += (input[i] - '0');
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == 'E')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else
+                    {
+                        data = 0;
+                        return false;
+                    }
+                }
+                if (exp > 0)
+                    for (int i = 0; i < exp; i++)
+                    {
+                        _data *= 10;
+                    }
+                else for (int i = 0; i > exp; i--)
                     {
                         _data /= 10;
                     }
@@ -468,7 +892,7 @@ namespace LibCLCC.NET.Data
         /// <param name="input"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static bool TryParse(this string input , out long data)
+        public static bool TryParse(this string input, out long data)
         {
 
             bool Negative = input.StartsWith("-");
@@ -487,19 +911,19 @@ namespace LibCLCC.NET.Data
             {
                 Start += 2;
                 long _data = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 16;
-                    if ((input [ i ] >= '0' && input [ i ] <= '9'))
+                    if ((input[i] >= '0' && input[i] <= '9'))
                     {
-                        _data += input [ i ] - '0';
+                        _data += input[i] - '0';
                     }
                     else
-                    if ((input [ i ] >= 'A' && input [ i ] <= 'F'))
+                    if ((input[i] >= 'A' && input[i] <= 'F'))
                     {
-                        _data += input [ i ] - 'A' + 10;
+                        _data += input[i] - 'A' + 10;
                     }
-                    else if ((input [ i ] == '_')) continue;
+                    else if ((input[i] == '_')) continue;
                     else
                     {
                         data = -1;
@@ -513,14 +937,14 @@ namespace LibCLCC.NET.Data
             {
                 Start += 2;
                 long _data = 8;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 16;
-                    if ((input [ i ] >= '0' && input [ i ] <= '7'))
+                    if ((input[i] >= '0' && input[i] <= '7'))
                     {
-                        _data += input [ i ] - '0';
+                        _data += input[i] - '0';
                     }
-                    else if ((input [ i ] == '_')) continue;
+                    else if ((input[i] == '_')) continue;
                     else
                     {
                         data = -1;
@@ -535,19 +959,19 @@ namespace LibCLCC.NET.Data
             {
                 Start += 2;
                 long _data = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 2;
-                    if (input [ i ] == '0')
+                    if (input[i] == '0')
                     {
                         _data += 0;
                     }
                     else
-                    if (input [ i ] == '1')
+                    if (input[i] == '1')
                     {
                         _data += 1;
                     }
-                    else if ((input [ i ] == '_')) continue;
+                    else if ((input[i] == '_')) continue;
                     else
                     {
                         data = -1;
@@ -563,22 +987,22 @@ namespace LibCLCC.NET.Data
                 long _data = 0;
                 int exp = 0;
                 byte mde = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     if (mde == 0)
                         _data *= 10;
                     if (mde == 1)
                         exp *= 10;
-                    if ((input [ i ] >= '0' && input [ i ] <= '9'))
+                    if ((input[i] >= '0' && input[i] <= '9'))
                     {
                         if (mde == 0)
-                            _data += (input [ i ] - '0');
+                            _data += (input[i] - '0');
                         if (mde == 1)
-                            exp += (input [ i ] - '0');
+                            exp += (input[i] - '0');
                     }
-                    else if ((input [ i ] == '_')) continue;
-                    else if ((input [ i ] == 'E')) mde = 1;
-                    else if ((input [ i ] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == 'E')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
                     else
                     {
                         data = -1;
@@ -586,11 +1010,11 @@ namespace LibCLCC.NET.Data
                     }
                 }
                 if (exp > 0)
-                    for (int i = 0 ; i < exp ; i++)
+                    for (int i = 0; i < exp; i++)
                     {
                         _data *= 10;
                     }
-                else for (int i = 0 ; i > exp ; i--)
+                else for (int i = 0; i > exp; i--)
                     {
                         _data /= 10;
                     }
@@ -606,7 +1030,144 @@ namespace LibCLCC.NET.Data
         /// <param name="input"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static bool TryParse(this string input , out ulong data)
+        public static bool TryParse(this RefString input, out long data)
+        {
+
+            bool Negative = input.StartsWith("-");
+            int Start = 0;
+            int Length = input.Length;
+            if (Negative)
+            {
+                Start = 1;
+            }
+            if (input[input.Length - 1] == 'L' || input[input.Length - 1] == 'l')
+            {
+                Length -= 1;
+            }
+            if (input.StartsWith("0X", Start, true))
+            {
+                Start += 2;
+                long _data = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 16;
+                    if ((input[i] >= '0' && input[i] <= '9'))
+                    {
+                        _data += input[i] - '0';
+                    }
+                    else
+                    if ((input[i] >= 'A' && input[i] <= 'F'))
+                    {
+                        _data += input[i] - 'A' + 10;
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else
+                    {
+                        data = -1;
+                        return false;
+                    }
+                }
+                data = _data * (Negative ? -1 : 1);
+                return true;
+            }
+            else if (input.StartsWith("0O", Start, true))
+            {
+                Start += 2;
+                long _data = 8;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 16;
+                    if ((input[i] >= '0' && input[i] <= '7'))
+                    {
+                        _data += input[i] - '0';
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else
+                    {
+                        data = -1;
+                        return false;
+                    }
+                }
+                data = _data * (Negative ? -1 : 1);
+                return true;
+            }
+            else
+            if (input.StartsWith("0B", Start, true))
+            {
+                Start += 2;
+                long _data = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 2;
+                    if (input[i] == '0')
+                    {
+                        _data += 0;
+                    }
+                    else
+                    if (input[i] == '1')
+                    {
+                        _data += 1;
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else
+                    {
+                        data = -1;
+                        return false;
+                    }
+                }
+                data = _data * (Negative ? -1 : 1);
+                return true;
+            }
+            else
+            {
+
+                long _data = 0;
+                int exp = 0;
+                byte mde = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    if (mde == 0)
+                        _data *= 10;
+                    if (mde == 1)
+                        exp *= 10;
+                    if ((input[i] >= '0' && input[i] <= '9'))
+                    {
+                        if (mde == 0)
+                            _data += (input[i] - '0');
+                        if (mde == 1)
+                            exp += (input[i] - '0');
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == 'E')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else
+                    {
+                        data = -1;
+                        return false;
+                    }
+                }
+                if (exp > 0)
+                    for (int i = 0; i < exp; i++)
+                    {
+                        _data *= 10;
+                    }
+                else for (int i = 0; i > exp; i--)
+                    {
+                        _data /= 10;
+                    }
+                data = _data * (Negative ? -1 : 1);
+                return true;
+            }
+        }
+        /// <summary>
+        /// Parse a string to an int64.
+        /// <br/>
+        /// Accepted format: 0x, 0o, 0b and scientific notation.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool TryParse(this string input, out ulong data)
         {
 
             bool Negative = input.StartsWith("-");
@@ -631,19 +1192,19 @@ namespace LibCLCC.NET.Data
             {
                 Start += 2;
                 ulong _data = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 16;
-                    if ((input [ i ] >= '0' && input [ i ] <= '9'))
+                    if ((input[i] >= '0' && input[i] <= '9'))
                     {
-                        _data += (ulong)input [ i ] - '0';
+                        _data += (ulong)input[i] - '0';
                     }
                     else
-                    if ((input [ i ] >= 'A' && input [ i ] <= 'F'))
+                    if ((input[i] >= 'A' && input[i] <= 'F'))
                     {
-                        _data += (ulong)input [ i ] - 'A' + 10;
+                        _data += (ulong)input[i] - 'A' + 10;
                     }
-                    else if ((input [ i ] == '_')) continue;
+                    else if ((input[i] == '_')) continue;
                     else
                     {
                         data = 0;
@@ -657,14 +1218,14 @@ namespace LibCLCC.NET.Data
             {
                 Start += 2;
                 ulong _data = 8;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 16;
-                    if ((input [ i ] >= '0' && input [ i ] <= '7'))
+                    if ((input[i] >= '0' && input[i] <= '7'))
                     {
-                        _data += (ulong)input [ i ] - '0';
+                        _data += (ulong)input[i] - '0';
                     }
-                    else if ((input [ i ] == '_')) continue;
+                    else if ((input[i] == '_')) continue;
                     else
                     {
                         data = 0;
@@ -675,23 +1236,23 @@ namespace LibCLCC.NET.Data
                 return true;
             }
             else
-            if (input.StartsWith("0B", Start ))
+            if (input.StartsWith("0B", Start))
             {
                 Start += 2;
                 ulong _data = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     _data *= 2;
-                    if (input [ i ] == '0')
+                    if (input[i] == '0')
                     {
                         _data += 0;
                     }
                     else
-                    if (input [ i ] == '1')
+                    if (input[i] == '1')
                     {
                         _data += 1;
                     }
-                    else if ((input [ i ] == '_')) continue;
+                    else if ((input[i] == '_')) continue;
                     else
                     {
                         data = 0;
@@ -707,22 +1268,22 @@ namespace LibCLCC.NET.Data
                 ulong _data = 0;
                 int exp = 0;
                 byte mde = 0;
-                for (int i = Start ; i < Length ; i++)
+                for (int i = Start; i < Length; i++)
                 {
                     if (mde == 0)
                         _data *= 10;
                     if (mde == 1)
                         exp *= 10;
-                    if ((input [ i ] >= '0' && input [ i ] <= '9'))
+                    if ((input[i] >= '0' && input[i] <= '9'))
                     {
                         if (mde == 0)
-                            _data += (ulong)(input [ i ] - '0');
+                            _data += (ulong)(input[i] - '0');
                         if (mde == 1)
-                            exp += (input [ i ] - '0');
+                            exp += (input[i] - '0');
                     }
-                    else if ((input [ i ] == '_')) continue;
-                    else if ((input [ i ] == 'E')) mde = 1;
-                    else if ((input [ i ] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == 'E')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
                     else
                     {
                         data = 0;
@@ -730,11 +1291,154 @@ namespace LibCLCC.NET.Data
                     }
                 }
                 if (exp > 0)
-                    for (int i = 0 ; i < exp ; i++)
+                    for (int i = 0; i < exp; i++)
                     {
                         _data *= 10;
                     }
-                else for (int i = 0 ; i > exp ; i--)
+                else for (int i = 0; i > exp; i--)
+                    {
+                        _data /= 10;
+                    }
+                data = _data;
+                return true;
+            }
+        }
+        /// <summary>
+        /// Parse a string to an int64.
+        /// <br/>
+        /// Accepted format: 0x, 0o, 0b and scientific notation.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool TryParse(this RefString input, out ulong data)
+        {
+
+            bool Negative = input.StartsWith("-");
+            int Start = 0;
+            int Length = input.Length;
+            if (Negative)
+            {
+                data = 0;
+                return false;
+            }
+            if (input.EndsWith("UL") || input.EndsWith("ul") || input.EndsWith("Ul") || input.EndsWith("uL"))
+            {
+                Length -= 2;
+            }
+            else if (input.EndsWith("L") || input.EndsWith("l"))
+            {
+                data = 0;
+                return false;
+            }
+            if (input.StartsWith("0X", Start, true))
+            {
+                Start += 2;
+                ulong _data = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 16;
+                    if ((input[i] >= '0' && input[i] <= '9'))
+                    {
+                        _data += (ulong)input[i] - '0';
+                    }
+                    else
+                    if ((input[i] >= 'A' && input[i] <= 'F'))
+                    {
+                        _data += (ulong)input[i] - 'A' + 10;
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else
+                    {
+                        data = 0;
+                        return false;
+                    }
+                }
+                data = _data;
+                return true;
+            }
+            else if (input.StartsWith("0O", Start, true))
+            {
+                Start += 2;
+                ulong _data = 8;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 16;
+                    if ((input[i] >= '0' && input[i] <= '7'))
+                    {
+                        _data += (ulong)input[i] - '0';
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else
+                    {
+                        data = 0;
+                        return false;
+                    }
+                }
+                data = _data;
+                return true;
+            }
+            else
+            if (input.StartsWith("0B", Start, true))
+            {
+                Start += 2;
+                ulong _data = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    _data *= 2;
+                    if (input[i] == '0')
+                    {
+                        _data += 0;
+                    }
+                    else
+                    if (input[i] == '1')
+                    {
+                        _data += 1;
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else
+                    {
+                        data = 0;
+                        return false;
+                    }
+                }
+                data = _data;
+                return true;
+            }
+            else
+            {
+
+                ulong _data = 0;
+                int exp = 0;
+                byte mde = 0;
+                for (int i = Start; i < Length; i++)
+                {
+                    if (mde == 0)
+                        _data *= 10;
+                    if (mde == 1)
+                        exp *= 10;
+                    if ((input[i] >= '0' && input[i] <= '9'))
+                    {
+                        if (mde == 0)
+                            _data += (ulong)(input[i] - '0');
+                        if (mde == 1)
+                            exp += (input[i] - '0');
+                    }
+                    else if ((input[i] == '_')) continue;
+                    else if ((input[i] == 'E')) mde = 1;
+                    else if ((input[i] == '-') && mde == 1 && exp >= 0) exp *= -1;
+                    else
+                    {
+                        data = 0;
+                        return false;
+                    }
+                }
+                if (exp > 0)
+                    for (int i = 0; i < exp; i++)
+                    {
+                        _data *= 10;
+                    }
+                else for (int i = 0; i > exp; i--)
                     {
                         _data /= 10;
                     }

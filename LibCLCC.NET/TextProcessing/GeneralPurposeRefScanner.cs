@@ -3,15 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
-using System.Text;
 
 namespace LibCLCC.NET.TextProcessing
 {
     /// <summary>
-    /// General purpose scanner. If you are building a compiler against it, you may need a second-pass scanner to convert operators.
+    /// General purpose scanner. If you are building a compiler against it, you may need a second-pass scanner to convert operators. This Scanner is using RefString
     /// </summary>
-    public class GeneralPurposeScanner
+    public class GeneralPurposeRefScanner
     {
         /// <summary>
         /// Blank Splitters
@@ -45,7 +43,7 @@ namespace LibCLCC.NET.TextProcessing
         /// </summary>
         /// <param name="HEAD"></param>
         [Obsolete]
-        public void SecondStageParse(ref Segment HEAD)
+        public void SecondStageParse(ref RefSegment HEAD)
         {
             SecondStageScan(ref HEAD);
         }
@@ -53,9 +51,9 @@ namespace LibCLCC.NET.TextProcessing
         /// Scan for negative numbers;
         /// </summary>
         /// <param name="HEAD"></param>
-        public void NegativeNumberScan(ref Segment HEAD)
+        public void NegativeNumberScan(ref RefSegment HEAD)
         {
-            Segment Cur = HEAD;
+            RefSegment Cur = HEAD;
             while (true)
             {
                 if (Cur == null)
@@ -120,9 +118,9 @@ namespace LibCLCC.NET.TextProcessing
         /// Scan for numbers with scientific notation.
         /// </summary>
         /// <param name="HEAD"></param>
-        public void ExponentialNumberScan(ref Segment HEAD)
+        public void ExponentialNumberScan(ref RefSegment HEAD)
         {
-            Segment Cur = HEAD;
+            RefSegment Cur = HEAD;
             while (true)
             {
                 if (Cur == null)
@@ -146,7 +144,7 @@ namespace LibCLCC.NET.TextProcessing
                         {
                             if (Cur.content.EndsWith("e") || Cur.content.EndsWith("E"))
                             {
-                                Segment candidate = Cur;
+                                RefSegment candidate = Cur;
                                 Cur = Cur.Next;
                                 bool Hit = false;
                                 if (Cur.content == "-")
@@ -170,7 +168,7 @@ namespace LibCLCC.NET.TextProcessing
                                         || Cur.content.TryParse(out int _))
                                     {
                                         Hit = true;
-                                        candidate.content += Cur.content;
+                                        candidate.content += Cur.content.Length;
 
                                     }
                                 if (Hit)
@@ -191,12 +189,12 @@ namespace LibCLCC.NET.TextProcessing
         /// Second stage scan for predefined identifiers;
         /// </summary>
         /// <param name="HEAD"></param>
-        public void SecondStageScan(ref Segment HEAD)
+        public void SecondStageScan(ref RefSegment HEAD)
         {
 
-            Segment Cur = HEAD;
-            string attention = "";
-            Segment AttSeg = Cur;
+            RefSegment Cur = HEAD;
+            RefString attention = "";
+            RefSegment AttSeg = Cur;
             while (true)
             {
                 if (Cur == null)
@@ -214,11 +212,11 @@ namespace LibCLCC.NET.TextProcessing
                 {
                     AttSeg = Cur;
                 }
-                attention += Cur.content;
+                attention += Cur.content.Length;
                 bool Hit = false;
                 foreach (var item in PredefinedSegmentTemplate)
                 {
-                    if (item == attention)
+                    if (attention==item)
                     {
                         Hit = true;
                         AttSeg.content = item;
@@ -230,7 +228,7 @@ namespace LibCLCC.NET.TextProcessing
                         }
                         break;
                     }
-                    if (item.StartsWith(attention))
+                    if (item.StartsWith(attention.ToString()))
                     {
                         Hit = true;
                         break;
@@ -251,7 +249,7 @@ namespace LibCLCC.NET.TextProcessing
         /// <param name="ID"></param>
         /// <returns></returns>
         [Obsolete]
-        public Segment Parse(string str, bool DisableCommentChecker, string ID = null)
+        public RefSegment Parse(string str, bool DisableCommentChecker, string ID = null)
         {
             return Scan(str, DisableCommentChecker, ID);
         }
@@ -262,10 +260,10 @@ namespace LibCLCC.NET.TextProcessing
         /// <param name="DisableCommentChecker"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public virtual Segment Scan(string str, bool DisableCommentChecker, string ID = null)
+        public virtual RefSegment Scan(string str, bool DisableCommentChecker, string ID = null)
         {
-            Segment root = new Segment { ID = ID };
-            Segment current = root;
+            RefSegment root = new RefSegment { ID = ID };
+            RefSegment current = root;
             bool isSegmentEncapsulation = false;
             string attention = "";
             SegmentEncapsulationIdentifier segmentEncapsulationIdentifier = null;
@@ -508,7 +506,7 @@ namespace LibCLCC.NET.TextProcessing
             //current.Prev = null;
             void NewSegment(int LineNumber)
             {
-                Segment segment = new Segment { ID = ID };
+                RefSegment segment = new RefSegment { ID = ID };
                 segment.Index = sid;
                 sid++;
                 current.Next = segment;
