@@ -25,4 +25,4 @@ jobs:
     - name: Pack
       run: dotnet pack -c:Release ./LibCLCC.NET/LibCLCC.NET.csproj
     - name: Publish to NuGet
-      run: nuget push **\*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API}}
+      run: dotnet nuget push **\*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API}}
