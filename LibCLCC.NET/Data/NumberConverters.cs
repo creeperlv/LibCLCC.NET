@@ -34,6 +34,12 @@ namespace LibCLCC.NET.Data
             }
             return true;
         }
+        /// <summary>
+        /// Convert the RefString to an integer.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static bool TryParse(this RefString input, out int data)
         {
             bool Negative = input.StartsWith("-");

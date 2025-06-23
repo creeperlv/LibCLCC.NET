@@ -35,6 +35,7 @@ Also, the library is aimed on providing functions in pure C# and compatible with
 |TreeModel					| A general purpose TreeModel with Xml support. |
 |RefString					| A struct to help reduce GC when dealing with string. |
 |Abstract File System		| An extendable mapping file system. |
+|Lexer						| An lexer based on Regex and inspired by `lex`. |
 
 ## License
 
