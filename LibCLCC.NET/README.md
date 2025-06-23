@@ -18,6 +18,25 @@ The goal of this library is to make life easier and reduce rewriting every code 
 
 Also, the library is aimed on providing functions in pure C# and compatible with Unity3D (at least the main library).
 
+## Features
+
+| Name			| Description |
+| ---  | --- |
+|ConnectableList			| Help concatenate two lists |
+|ArrayTools, DictionaryTools| Some tools for array, dictionary and list. |
+|ChainAction				| A Chain Action|
+|BreakableFunc				| A breakable function chain, returning `true` will break the chain|
+|ObservableData				| A wrapper of data that will invoke breakable functions when the data is changed |
+|ObservableDisposableData	| A wrapper of disposable data that will invoke breakable functions when the data is changed |
+|KVPair						| A key-value pair |
+|KVList						| A list which T is KVPair |
+|ReactableList				| A list that invoke BreakableFunc for Add,Remove,RemoveAt,Clear|
+|GeneralPurposeScanner		| A general purpose scanner. |
+|TreeModel					| A general purpose TreeModel with Xml support. |
+|RefString					| A struct to help reduce GC when dealing with string. |
+|Abstract File System		| An extendable mapping file system. |
+|Lexer						| An lexer based on Regex and inspired by `lex`. |
+
 ## License
 
 The project is licensed under the MIT License.

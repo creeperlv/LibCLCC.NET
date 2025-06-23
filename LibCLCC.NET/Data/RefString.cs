@@ -390,5 +390,25 @@ namespace LibCLCC.NET.Data
         {
             return Ref[Offset..(Offset + Length)];
         }
-    }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+		public override bool Equals(object obj)
+		{
+			return obj is RefString @string &&
+				   Ref == @string.Ref &&
+				   Offset == @string.Offset &&
+				   Length == @string.Length;
+		}
+        /// <summary>
+        /// Get the hashcode using Ref, Offset and Length.
+        /// </summary>
+        /// <returns></returns>
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(Ref, Offset, Length);
+		}
+	}
 }
