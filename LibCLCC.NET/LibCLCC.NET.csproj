@@ -1,28 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>$(VersionPrefix)1.30.31.0</Version>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <Description>The goal of this library is to make life easier and reduce rewriting every code every time a new project/tool is created.
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<LangVersion>9.0</LangVersion>
+		<Version>$(VersionPrefix)1.32.33.0</Version>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<Description>
+			The goal of this library is to make life easier and reduce rewriting every code every time a new project/tool is created.
 
-Also, the library is aimed on providing functions in pure C# and compatible with latest Unity3D (at least the main library).</Description>
-    <PackageProjectUrl>https://github.com/creeperlv/LibCLCC.NET</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/creeperlv/LibCLCC.NET</RepositoryUrl>
-  </PropertyGroup>
+			Also, the library is aimed on providing functions in pure C# and compatible with latest Unity3D (at least the main library).
+		</Description>
+		<PackageProjectUrl>https://github.com/creeperlv/LibCLCC.NET</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/creeperlv/LibCLCC.NET</RepositoryUrl>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\LICENSE.txt">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\LICENSE.txt">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>
