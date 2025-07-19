@@ -268,6 +268,10 @@ namespace LibCLCC.NET.Lexer
 		/// </summary>
 		public string? LexSegmentId = null;
 		/// <summary>
+		/// Matched Item ID
+		/// </summary>
+		public string? LexMatchedItemId = null;
+		/// <summary>
 		/// The identifier of the source. (could be a filename).
 		/// </summary>
 		public string? SourceID = null;

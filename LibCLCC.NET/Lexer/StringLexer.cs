@@ -7,7 +7,7 @@ namespace LibCLCC.NET.Lexer
 	/// <summary>
 	/// A Lexer that takes a string as input.
 	/// </summary>
-	#nullable enable
+#nullable enable
 	public class StringLexer : ILexer
 	{
 		/// <summary>
@@ -72,6 +72,7 @@ namespace LibCLCC.NET.Lexer
 							segment.Position.RLine = CurrentLine;
 						}
 						segment.SourceID = SourceID;
+						segment.LexMatchedItemId = item.Key;
 						if (Definition.LexSegmentIds.TryGetValue(item.Key, out var id))
 						{
 							segment.LexSegmentId = id;
@@ -106,6 +107,7 @@ namespace LibCLCC.NET.Lexer
 						segment.SourceID = SourceID;
 						segment.Position.LLine = CurrentLine;
 						segment.Position.LPos = CurrentPos;
+						segment.LexMatchedItemId = item.Item;
 						if (Definition.LexSegmentIds.TryGetValue(item.Item, out var id))
 						{
 							segment.LexSegmentId = id;
@@ -134,6 +136,7 @@ namespace LibCLCC.NET.Lexer
 				segment.SourceID = SourceID;
 				segment.Position.LLine = CurrentLine;
 				segment.Position.LPos = CurrentPos;
+				segment.LexMatchedItemId = wildcardID;
 				if (wildcardID != null && Definition.LexSegmentIds.TryGetValue(wildcardID, out var id))
 				{
 					segment.LexSegmentId = id;
